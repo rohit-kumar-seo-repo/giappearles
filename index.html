@@ -30,6 +30,11 @@
 </head>
 <body>
 
+  <div class="launch-offer-bar" aria-label="Current launch pricing">
+    <p><span class="launch-offer-label">Launch pricing</span><span>Save up to <strong id="launchOfferSavings">₹400</strong> on selected styles</span></p>
+    <a href="#catalog" data-shop-category="all">Explore the edit <span aria-hidden="true">↗</span></a>
+  </div>
+
   <!-- ==========================================
        1. STICKY NAVIGATION HEADER
        ========================================== -->
@@ -98,7 +103,6 @@
     </div>
 
     <div class="hero-headline">
-      <p class="hero-eyebrow">HANDCRAFTED · MADE TO ORDER</p>
       <h1 id="heroTitle">Made for your <em>sunny days.</em></h1>
       <p class="hero-description">Thoughtful details, made for sunny days.</p>
       <div class="hero-actions">
@@ -108,11 +112,42 @@
     </div>
   </section>
 
-  <div class="hero-assurances" aria-label="About GI Apparel">
-    <span>Handcrafted pieces</span>
-    <span>Made to order</span>
-    <span>Dispatched in 10–12 working days</span>
+  <div class="brand-marquee" aria-label="GI Apparel order details">
+    <p class="visually-hidden">Handcrafted pieces. Made to order. Dispatched in 10–12 working days. Flat ₹150 shipping.</p>
+    <div class="brand-marquee-viewport" aria-hidden="true">
+      <div class="brand-marquee-track" id="brandMarqueeTrack">
+        <div class="brand-marquee-group">
+          <span>Handcrafted pieces</span><i></i><span>Made to order</span><i></i><span>Dispatched in 10–12 working days</span><i></i><span>₹150 flat shipping</span><i></i>
+        </div>
+        <div class="brand-marquee-group">
+          <span>Handcrafted pieces</span><i></i><span>Made to order</span><i></i><span>Dispatched in 10–12 working days</span><i></i><span>₹150 flat shipping</span><i></i>
+        </div>
+      </div>
+    </div>
+    <button class="marquee-toggle" id="marqueeToggle" type="button" aria-label="Pause moving store details" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
+    </button>
   </div>
+
+  <section class="featured-edit" aria-labelledby="featuredEditTitle">
+    <div class="featured-edit-heading">
+      <div>
+        <h2 id="featuredEditTitle">The GI Edit</h2>
+        <p>A considered selection for the days ahead.</p>
+      </div>
+      <div class="featured-edit-controls" aria-label="Featured product carousel controls">
+        <span class="featured-edit-count" id="featuredEditCount" aria-hidden="true">01 / 08</span>
+        <button class="featured-edit-arrow" id="featuredEditPrev" type="button" aria-label="Show previous featured pieces" aria-controls="featuredRail" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
+        </button>
+        <button class="featured-edit-arrow" id="featuredEditNext" type="button" aria-label="Show next featured pieces" aria-controls="featuredRail">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="featured-rail" id="featuredRail" role="region" aria-label="Featured GI Apparel pieces" tabindex="0"></div>
+    <a class="featured-edit-all" href="#catalog" data-shop-category="all">View all pieces <span aria-hidden="true">↗</span></a>
+  </section>
 
 
   <!-- ==========================================
@@ -147,7 +182,7 @@
       <button class="filter-tab" data-category="bottoms">Skirts & Shorts</button>
       
       <!-- Filter Button -->
-      <button id="filterToggleBtn" class="action-btn" style="margin-left: auto; padding: 0.5rem 1.25rem; border-color: var(--color-accent-maroon); color: var(--color-accent-maroon);">⚙️ Filters & Sort</button>
+          <button id="filterToggleBtn" class="action-btn" style="margin-left: auto; padding: 0.5rem 1.25rem; border-color: var(--color-accent-maroon); color: var(--color-accent-maroon);"><svg class="filter-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/><circle cx="8" cy="6" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/></svg>Filters &amp; Sort</button>
     </div>
 
     <!-- Dynamic Product Cards Grid -->
@@ -156,12 +191,41 @@
     </div>
   </main>
 
+  <section class="shopping-questions" id="questions" aria-labelledby="shoppingQuestionsTitle">
+    <div class="shopping-questions-intro">
+      <h2 id="shoppingQuestionsTitle">Good to know before you order</h2>
+      <p>Clear details for choosing your piece, size and payment.</p>
+      <a class="questions-contact-link" href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">Still have a question? Message us <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="shopping-faq-list">
+      <details>
+        <summary>When will my order be dispatched?</summary>
+        <p>Each piece is made to order and is dispatched within 10–12 working days. Delivery time after dispatch varies by destination and courier. <a href="#shippingPolicyModal" class="trigger-shipping-policy">Read shipping details</a>.</p>
+      </details>
+      <details>
+        <summary>How much is shipping?</summary>
+        <p>Shipping is a flat ₹150 per order and is shown in your checkout total before you submit your order request.</p>
+      </details>
+      <details>
+        <summary>Which payment options can I use?</summary>
+        <p>You can pay online through Razorpay, where available methods are shown securely at checkout. You can also request COD or another offline option; GI Apparel will confirm availability and payment arrangements before accepting the order.</p>
+      </details>
+      <details>
+        <summary>Can I exchange an item?</summary>
+        <p>Eligible orders can be exchanged within 7 days of delivery. One size exchange per order is available subject to stock; reverse pickup or shipping for a size exchange is paid by the customer. <a href="#return-policy" class="trigger-return-policy">Read the full exchange policy</a>.</p>
+      </details>
+      <details>
+        <summary>How do I choose my size?</summary>
+        <p>Open the <a href="#sizeModal" class="trigger-size-guide">GI Apparel size guide</a> for measurements, or message us on <a href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">WhatsApp</a> for sizing help.</p>
+      </details>
+    </div>
+  </section>
+
   <section class="brand-story" id="brand-story" aria-labelledby="brandStoryTitle">
     <div class="brand-story-image">
       <img src="assets/images/optimized/gingham co-ord set1.jpg" alt="A pink gingham GI Apparel co-ord set, shown with its matching shorts" loading="lazy" decoding="async" />
     </div>
     <div class="brand-story-copy">
-      <p class="story-eyebrow">THE GI APPROACH</p>
       <h2 id="brandStoryTitle">Made with care.<br /><em>Worn with ease.</em></h2>
       <p>GI Apparel brings handcrafted details and easy silhouettes together in pieces made to order. Explore cotton, embroidery, and print-led styles designed for the days ahead.</p>
       <div class="story-details">
@@ -549,14 +613,16 @@
               <div class="payment-options-grid">
                 <label class="payment-card active">
                   <input type="radio" name="paymentMethod" value="offline" checked>
-                  <span>
-                    <span class="payment-name">Offline payment</span>
-                  <span class="payment-desc">Request COD or another offline option. GI Apparel will confirm availability and payment arrangements by email or phone.</span>
+                  <span class="payment-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>
+                  <span class="payment-option-copy">
+                    <span class="payment-name">Offline payment request</span>
+                    <span class="payment-desc">Request COD or another offline option. GI Apparel will confirm availability and payment arrangements by email or phone.</span>
                   </span>
                 </label>
                 <label class="payment-card">
                   <input type="radio" name="paymentMethod" value="razorpay">
-                  <span>
+                  <span class="payment-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.4 2.9 8.4 7 10 4.1-1.6 7-5.6 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                  <span class="payment-option-copy">
                     <span class="payment-name">Pay online with Razorpay</span>
                     <span class="payment-desc">Pay securely by UPI, card or another method offered by Razorpay.</span>
                   </span>
@@ -635,12 +701,18 @@
        9. FOOTER SECTION
        ========================================== -->
   <footer class="site-footer">
+    <span class="footer-watermark" aria-hidden="true">GI</span>
     <div class="footer-container">
       <div class="footer-brand">
-        <a href="#" class="brand-logo">
-          <span class="logo-mark">GI APPAREL</span>
+        <a href="#" class="brand-logo" aria-label="GI Apparel home">
+          <span class="logo-mark">GI</span><span class="logo-tag">APPAREL</span>
         </a>
-        <p>Handcrafted made-to-order clothing brand. Designed for effortless elegance, timeless silhouettes, and luxurious comfort.</p>
+        <p>Thoughtful details, easy silhouettes, and pieces made just for you.</p>
+        <a class="footer-shop-link" href="#catalog" data-shop-category="all">Shop the summer edit <span aria-hidden="true">↗</span></a>
+        <p class="footer-payment-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg>
+          Online payment via Razorpay · Offline payment by request
+        </p>
       </div>
 
       <div class="footer-col">
@@ -656,6 +728,7 @@
       <div class="footer-col">
         <h4>Customer Care</h4>
         <ul>
+          <li><a href="#questions">FAQs &amp; Order Help</a></li>
           <li><a href="#sizeModal" class="trigger-size-guide">Size Guide</a></li>
           <li><a href="#shippingPolicyModal" class="trigger-shipping-policy">Shipping &amp; Delivery</a></li>
           <li><a href="#return-policy" class="trigger-return-policy">Return & Exchange Policy</a></li>
@@ -675,7 +748,7 @@
 
     <div class="footer-bottom">
       <p>© 2026 GI Apparel. All rights reserved. Made-to-order luxury fashion.</p>
-      <p>Handcrafted · Made to order</p>
+      <p class="footer-credit">Designed &amp; managed by <a href="https://rohitkumarseo.com" target="_blank" rel="nofollow sponsored noopener noreferrer">Rohit Kumar SEO</a></p>
     </div>
   </footer>
 

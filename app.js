@@ -58,6 +58,7 @@ const DOM = {
   quickViewModal: document.getElementById('quickViewModal'),
   quickViewCloseBtn: document.getElementById('quickViewCloseBtn'),
   quickViewContent: document.getElementById('quickViewContent'),
+  returnPolicyModal: document.getElementById('returnPolicyModal'),
 
   // Cart Drawer Elements
   cartDrawer: document.getElementById('cartDrawerBackdrop'),
@@ -93,6 +94,9 @@ const DOM = {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initCatalog();
+  initFeaturedCarousel();
+  initLaunchOffer();
+  initBrandMarquee();
   initCategoryFilters();
   initSearchAndFilters();
   initMobileNavigation();
@@ -163,6 +167,130 @@ function initStorefrontLinks() {
       }
     });
   });
+}
+
+function initLaunchOffer() {
+  const savingsLabel = document.getElementById('launchOfferSavings');
+  const offerBar = savingsLabel?.closest('.launch-offer-bar');
+  if (!savingsLabel || !offerBar || !Array.isArray(PRODUCTS_DATA)) return;
+
+  const maximumSavings = PRODUCTS_DATA.reduce((maximum, product) => (
+    Math.max(maximum, Number(product.displayPrice) - Number(product.launchPrice))
+  ), 0);
+
+  if (maximumSavings <= 0) {
+    offerBar.hidden = true;
+    return;
+  }
+
+  savingsLabel.textContent = `₹${maximumSavings.toLocaleString('en-IN')}`;
+}
+
+function initFeaturedCarousel() {
+  const rail = document.getElementById('featuredRail');
+  const previousButton = document.getElementById('featuredEditPrev');
+  const nextButton = document.getElementById('featuredEditNext');
+  const countLabel = document.getElementById('featuredEditCount');
+  const section = rail?.closest('.featured-edit');
+  if (!rail || !previousButton || !nextButton || !Array.isArray(PRODUCTS_DATA)) return;
+
+  const featuredProducts = PRODUCTS_DATA.slice(0, 8);
+  if (!featuredProducts.length) {
+    section?.setAttribute('hidden', '');
+    return;
+  }
+
+  rail.innerHTML = featuredProducts.map((product) => `
+    <article class="featured-product" data-featured-product="${product.id}">
+      <div class="featured-product-image-wrap">
+        <span class="featured-product-badge ${product.isBundle ? 'is-bundle' : ''}">${product.badge}</span>
+        <img src="${encodeURI(product.image)}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 78vw, (max-width: 1024px) 40vw, 23vw" alt="${product.name}" loading="lazy" decoding="async" />
+      </div>
+      <div class="featured-product-info">
+        <span class="featured-product-category">${product.categoryLabel}</span>
+        <h3>${product.name}</h3>
+        <div class="featured-product-prices">
+          <strong>₹${product.launchPrice.toLocaleString('en-IN')}</strong>
+          <s>₹${product.displayPrice.toLocaleString('en-IN')}</s>
+          <span>Save ₹${(product.displayPrice - product.launchPrice).toLocaleString('en-IN')}</span>
+        </div>
+        <button class="featured-product-link" type="button" data-featured-open="${product.id}" aria-label="View details for ${product.name}">View details <span aria-hidden="true">↗</span></button>
+      </div>
+    </article>
+  `).join('');
+
+  const scrollRail = (direction) => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    rail.scrollBy({ left: rail.clientWidth * direction * 0.85, behavior: reducedMotion ? 'auto' : 'smooth' });
+  };
+
+  const updateControls = () => {
+    const atStart = rail.scrollLeft <= 2;
+    const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 2;
+    previousButton.disabled = atStart;
+    nextButton.disabled = atEnd;
+
+    if (countLabel) {
+      const firstCard = rail.firstElementChild;
+      const styles = window.getComputedStyle(rail);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+      const cardWidth = firstCard?.getBoundingClientRect().width || rail.clientWidth;
+      const firstVisible = Math.min(featuredProducts.length, Math.floor((rail.scrollLeft + 2) / (cardWidth + gap)) + 1);
+      countLabel.textContent = `${String(firstVisible).padStart(2, '0')} / ${String(featuredProducts.length).padStart(2, '0')}`;
+    }
+  };
+
+  previousButton.addEventListener('click', () => scrollRail(-1));
+  nextButton.addEventListener('click', () => scrollRail(1));
+  rail.addEventListener('click', (event) => {
+    const openButton = event.target.closest('[data-featured-open]');
+    if (openButton) openQuickView(openButton.dataset.featuredOpen);
+  });
+  rail.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    scrollRail(event.key === 'ArrowRight' ? 1 : -1);
+  });
+
+  let frame = 0;
+  rail.addEventListener('scroll', () => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      updateControls();
+      frame = 0;
+    });
+  }, { passive: true });
+  window.addEventListener('resize', updateControls, { passive: true });
+  updateControls();
+}
+
+function initBrandMarquee() {
+  const track = document.getElementById('brandMarqueeTrack');
+  const toggle = document.getElementById('marqueeToggle');
+  if (!track || !toggle) return;
+
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const syncMotionPreference = () => {
+    if (motionPreference.matches) {
+      track.classList.add('is-paused');
+      toggle.hidden = true;
+      toggle.setAttribute('aria-pressed', 'true');
+    } else {
+      toggle.hidden = false;
+      toggle.setAttribute('aria-pressed', String(track.classList.contains('is-paused')));
+    }
+  };
+
+  toggle.addEventListener('click', () => {
+    const paused = track.classList.toggle('is-paused');
+    toggle.setAttribute('aria-pressed', String(paused));
+    toggle.setAttribute('aria-label', paused ? 'Play moving store details' : 'Pause moving store details');
+  });
+
+  if (typeof motionPreference.addEventListener === 'function') {
+    motionPreference.addEventListener('change', syncMotionPreference);
+  }
+  syncMotionPreference();
 }
 
 function initModalAccessibility() {
@@ -699,6 +827,13 @@ function initQuickViewModal() {
   }
   if (DOM.quickViewContent) {
     DOM.quickViewContent.addEventListener('click', (event) => {
+      const exchangePolicyLink = event.target.closest('[data-open-return-policy]');
+      if (exchangePolicyLink) {
+        event.preventDefault();
+        DOM.returnPolicyModal?.classList.add('active');
+        return;
+      }
+
       const sizeButton = event.target.closest('[data-product-size]');
       if (sizeButton) {
         DOM.quickViewContent.querySelectorAll('[data-product-size]').forEach((button) => {
@@ -764,8 +899,9 @@ function openQuickView(productId) {
         <div class="quick-view-size-row" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
             <label style="font-weight: 600; font-size: 0.9rem; color: var(--color-accent-maroon);">Select Size:</label>
-            <button class="trigger-size-guide" onclick="closeQuickView(); openSizeModal();" style="font-size: 0.8125rem; color: var(--color-accent-maroon); font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
-              📏 View Size Guide
+            <button class="trigger-size-guide quick-view-size-guide" type="button" onclick="closeQuickView(); openSizeModal();">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16 12-12 4 4L8 20H4v-4Z"/><path d="m13 7 4 4M10 10l2 2M7 13l2 2"/></svg>
+              View Size Guide
             </button>
           </div>
           <div class="quick-view-size-options" role="group" aria-label="Choose a size">
@@ -777,8 +913,9 @@ function openQuickView(productId) {
         </div>
 
         <div class="product-delivery-note">
-          <span>Made to order · dispatched in 10–12 working days</span>
-          <span>₹150 flat shipping · shown in checkout</span>
+          <span class="delivery-note-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8h10a3 3 0 1 0 0-6H8a3 3 0 0 0 0 6h8a3 3 0 1 1 0 8H5"/></svg>Made to order · dispatched in 10–12 working days</span>
+          <span class="delivery-note-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v13H3zM3 11h18M7 16h4"/><path d="M7 4h10"/></svg>₹150 flat shipping · shown in checkout</span>
+          <a href="#return-policy" data-open-return-policy>One size exchange per order · see terms</a>
           <a href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">Need sizing help? Message us</a>
         </div>
 
