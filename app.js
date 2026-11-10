@@ -726,6 +726,7 @@ function openQuickView(productId) {
 
   AppState.quickViewProduct = product;
   window.__giSelectedSize = null;
+  DOM.quickViewContent.scrollTop = 0;
 
   const galleryImages = [product.image, product.secondaryImage, ...(product.additionalImages || [])].filter(Boolean);
 
