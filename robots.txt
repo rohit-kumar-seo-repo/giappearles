@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /login.html
+
+Sitemap: https://giapparel.in/sitemap.xml

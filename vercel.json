@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/supabase-config.js",
+      "destination": "/api/supabase-config"
+    }
+  ]
+}

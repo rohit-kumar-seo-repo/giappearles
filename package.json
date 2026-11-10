@@ -1,0 +1,16 @@
+{
+  "name": "gi-apparel-static-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.57.4"
+  },
+  "scripts": {
+  "build": "node build.mjs",
+  "start": "node server.js",
+  "test": "node --test"
+}
+}

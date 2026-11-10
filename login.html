@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to your GI Apparel account.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Account Sign In | GI Apparel</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="account-page">
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo" aria-label="GI Apparel home">
+        <span class="logo-mark">GI</span>
+        <span class="logo-tag">APPAREL</span>
+      </a>
+      <div class="account-page-header-actions">
+        <a href="index.html#catalog" class="account-back-link">Continue shopping</a>
+        <div class="header-account" id="headerAccount">
+          <div class="header-account-signed-out" id="headerAccountSignedOut">
+            <a class="account-header-link" href="login.html#sign-in">Sign In</a>
+            <a class="account-header-link account-header-register" href="login.html#register">Create Account</a>
+          </div>
+          <div class="header-account-signed-in" id="headerAccountSignedIn" hidden>
+            <button class="account-header-toggle" id="headerAccountToggle" type="button" aria-expanded="false" aria-controls="headerAccountDropdown">
+              <span id="headerAccountName">My Account</span>
+              <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+            </button>
+            <nav class="account-header-dropdown" id="headerAccountDropdown" aria-label="Account menu" hidden>
+              <a href="login.html#account">My Account</a>
+              <a href="login.html#orders">My Orders</a>
+              <a href="login.html#addresses">My Addresses</a>
+              <a href="login.html#profile">Edit Profile</a>
+              <button id="headerAccountLogout" type="button">Logout</button>
+              <p id="headerAccountMessage" class="account-header-message" role="status" aria-live="polite" hidden></p>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="account-main">
+    <section class="account-card" aria-labelledby="accountTitle">
+      <div class="account-card-image" role="img" aria-label="GI Apparel summer collection"></div>
+      <div class="account-card-content">
+        <a href="index.html" class="account-eyebrow">GI APPAREL</a>
+        <h1 id="accountTitle">Your GI Apparel account</h1>
+
+        <div id="authPanel">
+          <p class="account-intro">Sign in or create an account to save your details and track orders.</p>
+          <div class="account-tabs" id="accountTabs" role="tablist" aria-label="Account access">
+            <button class="account-tab active" id="showLoginBtn" type="button" role="tab" aria-selected="true">Sign in</button>
+            <button class="account-tab" id="showRegisterBtn" type="button" role="tab" aria-selected="false">Create account</button>
+          </div>
+
+          <form id="loginForm" class="account-form">
+            <label for="loginEmail">Email address</label>
+            <input id="loginEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+            <div class="password-label-row">
+              <label for="loginPassword">Password</label>
+              <button id="forgotPasswordBtn" class="text-button" type="button">Forgot password?</button>
+            </div>
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+            <p id="loginMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+            <button id="loginSubmitBtn" class="account-submit" type="submit">Sign in</button>
+          </form>
+
+          <form id="registerForm" class="account-form" hidden>
+            <label for="registerName">Full name</label>
+            <input id="registerName" name="name" autocomplete="name" maxlength="100" minlength="2" required>
+            <label for="registerEmail">Email address</label>
+            <input id="registerEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+            <label for="registerPassword">Password</label>
+            <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required>
+            <label for="registerPasswordConfirm">Confirm password</label>
+            <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" required>
+            <p id="registerMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+            <button id="registerSubmitBtn" class="account-submit" type="submit">Create account</button>
+          </form>
+
+          <section id="registrationSuccessPanel" class="registration-success-panel" aria-live="polite" hidden>
+            <p id="registrationSuccessMessage" class="account-message" data-type="success">Your account has been created successfully! Welcome to GI Apparel.</p>
+            <p id="emailVerificationMessage" class="account-intro" hidden>Please check your inbox to verify your email address before signing in.</p>
+            <a class="account-submit registration-login-link" href="login.html#sign-in">GO TO LOGIN</a>
+          </section>
+
+          <form id="resetPasswordForm" class="account-form" hidden>
+            <p class="account-intro">Choose a new password for your account.</p>
+            <label for="newPassword">New password</label>
+            <input id="newPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <label for="confirmPassword">Confirm new password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <p id="resetMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+            <button id="resetSubmitBtn" class="account-submit" type="submit">Update password</button>
+          </form>
+        </div>
+
+        <section id="signedInPanel" class="signed-in-panel account-dashboard" hidden>
+          <div class="account-dashboard-header" id="account">
+            <div>
+              <p id="welcomeMessage" class="account-welcome-message"></p>
+              <p class="account-intro">Signed in as <strong id="signedInEmail"></strong></p>
+              <p id="signedInMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+            </div>
+            <button id="signOutBtn" class="text-button" type="button">Sign out</button>
+          </div>
+
+          <div class="account-dashboard-grid">
+            <section class="account-section" id="profile">
+              <h2>My Profile</h2>
+              <form id="profileForm" class="account-form">
+                <label for="profileName">Full name</label>
+                <input id="profileName" name="full_name" autocomplete="name" maxlength="100" minlength="2" required>
+                <label for="profileEmail">Email address</label>
+                <input id="profileEmail" type="email" autocomplete="email" disabled>
+                <label for="profilePhone">Mobile number</label>
+                <input id="profilePhone" name="phone" type="tel" autocomplete="tel" maxlength="20">
+                <button class="account-submit" type="submit">Save profile</button>
+              </form>
+            </section>
+
+            <section class="account-section" id="addresses">
+              <h2>My Addresses</h2>
+              <div id="addressList" class="address-list" aria-live="polite"></div>
+              <form id="addressForm" class="account-form address-form" hidden>
+                <input id="addressId" name="id" type="hidden">
+                <label for="addressLabel">Address label</label>
+                <input id="addressLabel" name="label" maxlength="40" value="Home" required>
+                <label for="addressRecipient">Recipient name</label>
+                <input id="addressRecipient" name="recipient_name" autocomplete="name" maxlength="100" minlength="2" required>
+                <label for="addressPhone">Mobile number</label>
+                <input id="addressPhone" name="phone" type="tel" autocomplete="tel" maxlength="20" required>
+                <label for="addressLine1">Address</label>
+                <input id="addressLine1" name="address_line1" autocomplete="address-line1" maxlength="160" minlength="5" required>
+                <label for="addressLine2">Apartment, suite, landmark (optional)</label>
+                <input id="addressLine2" name="address_line2" autocomplete="address-line2" maxlength="160">
+                <label for="addressCity">City</label>
+                <input id="addressCity" name="city" autocomplete="address-level2" maxlength="80" required>
+                <label for="addressState">State</label>
+                <input id="addressState" name="state" autocomplete="address-level1" maxlength="80" required>
+                <label for="addressPostalCode">PIN code</label>
+                <input id="addressPostalCode" name="postal_code" autocomplete="postal-code" inputmode="numeric" pattern="[1-9][0-9]{5}" maxlength="6" required>
+                <label class="account-checkbox"><input id="addressDefault" name="is_default" type="checkbox"> Set as default delivery address</label>
+                <p id="addressMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+                <div class="account-button-row">
+                  <button class="account-submit" type="submit">Save address</button>
+                  <button id="cancelAddressBtn" class="text-button" type="button">Cancel</button>
+                </div>
+              </form>
+              <button id="addAddressBtn" class="account-outline-button" type="button">Add an address</button>
+            </section>
+
+            <section class="account-section" id="orders">
+              <h2>My Orders</h2>
+              <div id="orderHistory" class="order-history" aria-live="polite"></div>
+            </section>
+
+            <section class="account-section">
+              <h2>Change password</h2>
+              <form id="changePasswordForm" class="account-form">
+                <label for="currentPassword">Current password</label>
+                <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required>
+                <label for="accountNewPassword">New password</label>
+                <input id="accountNewPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+                <label for="accountConfirmPassword">Confirm new password</label>
+                <input id="accountConfirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+                <p id="passwordMessage" class="account-message" role="status" aria-live="polite" hidden></p>
+                <button class="account-submit" type="submit">Update password</button>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <p class="account-footnote">Your password is handled securely by Supabase Auth and is never stored by GI Apparel.</p>
+        <a href="index.html" class="account-home-link">Back to GI Apparel</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="supabase.js"></script>
+  <script type="module" src="account-header.js"></script>
+  <script type="module" src="login.js"></script>
+</body>
+</html>
