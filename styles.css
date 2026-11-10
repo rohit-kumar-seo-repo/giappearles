@@ -2265,6 +2265,15 @@ a {
   color: #e3d4d0;
 }
 
+.footer-brand .logo-mark {
+  color: #f4ede7;
+}
+
+.footer-brand p,
+.footer-col li span {
+  color: #e3d4d0;
+}
+
 .account-card-image {
   background:
     linear-gradient(180deg, rgba(43, 14, 26, 0.02), rgba(43, 14, 26, 0.18)),
