@@ -437,15 +437,15 @@ function renderProducts() {
     <article class="product-card" data-product-id="${product.id}">
       <div class="product-image-wrap">
         <span class="badge-launch ${product.isBundle ? 'badge-bundle' : ''}">${product.badge}</span>
-        <img src="${product.image}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="${product.name}" class="product-image" loading="lazy" decoding="async" onclick="openQuickView('${product.id}')" style="cursor: pointer;" />
+        <img src="${product.image}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="${product.name}" class="product-image" loading="lazy" decoding="async" />
         <div class="quick-actions-overlay">
-          <button class="btn-quick-action" onclick="openQuickView('${product.id}')">View Full Details</button>
+          <button class="btn-quick-action" type="button" aria-label="View details for ${product.name}" onclick="openQuickView('${product.id}')">View Details</button>
         </div>
       </div>
       
-      <div class="product-info" onclick="openQuickView('${product.id}')" style="cursor: pointer;">
+      <div class="product-info">
         <span class="product-category-tag">${product.categoryLabel}</span>
-        <h3 class="product-name">${product.name}</h3>
+        <h3 class="product-name"><button class="product-name-button" type="button" aria-label="View details for ${product.name}" onclick="openQuickView('${product.id}')">${product.name}</button></h3>
         
         <div class="product-price-row" style="margin-bottom: 0;">
           <span class="launch-price">₹${product.launchPrice.toLocaleString()}</span>
