@@ -830,6 +830,7 @@ function initQuickViewModal() {
       const exchangePolicyLink = event.target.closest('[data-open-return-policy]');
       if (exchangePolicyLink) {
         event.preventDefault();
+        closeQuickView();
         DOM.returnPolicyModal?.classList.add('active');
         return;
       }

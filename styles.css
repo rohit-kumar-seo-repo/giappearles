@@ -2966,10 +2966,10 @@ a {
   .marquee-toggle { width: 40px; height: 40px; flex-basis: 40px; }
 
   .featured-edit { padding: 3rem 1rem 3.25rem; }
-  .featured-edit-heading { align-items: flex-end; gap: 0.65rem; margin-bottom: 1.2rem; }
+  .featured-edit-heading { align-items: flex-start; flex-direction: column; gap: 0.65rem; margin-bottom: 1.2rem; }
   .featured-edit-heading h2 { font-size: clamp(2rem, 9vw, 2.7rem); }
   .featured-edit-heading p { max-width: 22ch; font-size: 0.8rem; line-height: 1.5; }
-  .featured-edit-controls { gap: 0.3rem; }
+  .featured-edit-controls { align-self: flex-end; gap: 0.3rem; margin-top: -0.6rem; }
   .featured-edit-count { margin-right: 0.15rem; font-size: 0.62rem; }
   .featured-edit-arrow { width: 38px; height: 38px; }
   .featured-rail { gap: 0.85rem; margin-right: -1rem; padding-right: 1rem; }
@@ -2997,8 +2997,6 @@ a {
 @media (max-width: 380px) {
   .launch-offer-bar { align-items: center; }
   .launch-offer-bar a { max-width: 8rem; }
-  .featured-edit-heading { align-items: flex-start; flex-direction: column; }
-  .featured-edit-controls { align-self: flex-end; margin-top: -0.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
