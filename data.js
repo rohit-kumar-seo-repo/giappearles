@@ -48,7 +48,7 @@ const PRODUCTS_DATA = [
     additionalImages: ["assets/images/optimized/midnight halter top3.jpg"],
     description: "Sleek and sophisticated midnight black halter neck top crafted with high-grade satin blend. Features a elegant tie-back halter neck for an effortless evening chic aesthetic.",
     sizes: ["XS", "S", "M", "L", "XL"],
-    badge: "BESTSELLER",
+    badge: "THE EDIT",
     rating: 4.8,
     reviewsCount: 34,
     details: [
@@ -69,7 +69,7 @@ const PRODUCTS_DATA = [
     shipping: "Extra",
     image: "assets/images/optimized/rosie gingham top1.jpg",
     secondaryImage: "assets/images/optimized/rosie gingham top2.jpg",
-    description: "A handcrafted pink and white cotton gingham halter-neck romper with a ruched bodice, elasticated waist and flared shorts.",
+    description: "A handcrafted pink and white cotton gingham halter-neck top with a shirred bodice and softly flared peplum hem.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
     rating: 4.9,
@@ -77,8 +77,8 @@ const PRODUCTS_DATA = [
     details: [
       "Fabric: Cotton Gingham Fabric",
       "Colour: Pink & White Checks",
-      "Design: Halter-Neck Romper",
-      "Details: Ruched bodice, elasticated waist and flared shorts",
+      "Design: Halter-Neck Top",
+      "Details: Shirred bodice and softly flared peplum hem",
       "Craftsmanship: Handcrafted"
     ]
   },
@@ -120,7 +120,7 @@ const PRODUCTS_DATA = [
     secondaryImage: "assets/images/optimized/alora mini1.jpg",
     description: "A handcrafted powder blue mini dress in soft textured cotton fabric, with spaghetti straps, a gathered skirt and an embroidered scalloped hem.",
     sizes: ["XS", "S", "M", "L", "XL"],
-    badge: "POPULAR",
+    badge: "SIGNATURE",
     rating: 4.9,
     reviewsCount: 31,
     details: [

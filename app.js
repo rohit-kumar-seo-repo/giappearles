@@ -96,12 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initCategoryFilters();
   initSearchAndFilters();
   initMobileNavigation();
+  initStorefrontLinks();
   initSizeModal();
   initReturnPolicyModal();
+  initShippingPolicyModal();
   initTermsModal();
   initCartDrawer();
   initQuickViewModal();
   initCheckoutModal();
+  initModalAccessibility();
   console.log("✨ GI Apparel Web Application Initialized Successfully.");
 });
 
@@ -146,6 +149,106 @@ function initMobileNavigation() {
   } else {
     desktopLayout.addListener(closeWhenDesktop);
   }
+}
+
+function initStorefrontLinks() {
+  document.querySelectorAll('[data-shop-category]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const category = link.dataset.shopCategory;
+      const filter = document.querySelector('.filter-tab[data-category="' + category + '"]');
+      if (category === 'all') {
+        resetAllFilters();
+      } else if (filter) {
+        filter.click();
+      }
+    });
+  });
+}
+
+function initModalAccessibility() {
+  const containers = Array.from(document.querySelectorAll('.modal-backdrop, .cart-drawer-backdrop'));
+  if (!containers.length) return;
+
+  const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  let activeContainer = null;
+  let returnFocus = null;
+
+  const getDialog = (container) => container.querySelector('[role="dialog"]') || container;
+  const getFocusable = (container) => {
+    const dialog = getDialog(container);
+    return Array.from(dialog.querySelectorAll(focusableSelector)).filter((element) => (
+      !element.hasAttribute('hidden') && element.getClientRects().length > 0
+    ));
+  };
+
+  const syncDialogs = () => {
+    const openContainers = containers.filter((container) => container.classList.contains('active'));
+    const nextContainer = openContainers[openContainers.length - 1] || null;
+
+    containers.forEach((container) => {
+      const isTopDialog = container === nextContainer;
+      container.inert = !isTopDialog;
+      container.setAttribute('aria-hidden', String(!isTopDialog));
+    });
+
+    document.body.style.overflow = nextContainer ? 'hidden' : '';
+
+    if (nextContainer && nextContainer !== activeContainer) {
+      if (!activeContainer) returnFocus = document.activeElement;
+      activeContainer = nextContainer;
+      const dialog = getDialog(nextContainer);
+      dialog.setAttribute('tabindex', '-1');
+      requestAnimationFrame(() => {
+        if (activeContainer !== nextContainer) return;
+        const firstFocusable = getFocusable(nextContainer)[0];
+        (firstFocusable || dialog).focus({ preventScroll: true });
+      });
+    } else if (!nextContainer && activeContainer) {
+      activeContainer = null;
+      const previousFocus = returnFocus;
+      returnFocus = null;
+      if (previousFocus && previousFocus.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
+    }
+  };
+
+  const observer = new MutationObserver(syncDialogs);
+  containers.forEach((container) => {
+    observer.observe(container, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!activeContainer) return;
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      const closeButton = activeContainer.querySelector('[data-dialog-close], .modal-close-btn');
+      if (closeButton) closeButton.click();
+      else activeContainer.classList.remove('active');
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const focusable = getFocusable(activeContainer);
+    if (!focusable.length) {
+      event.preventDefault();
+      getDialog(activeContainer).focus();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !activeContainer.contains(document.activeElement))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !activeContainer.contains(document.activeElement))) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  syncDialogs();
 }
 
 // ==========================================================================
@@ -311,8 +414,6 @@ function renderProducts() {
     list.sort((a, b) => a.launchPrice - b.launchPrice);
   } else if (AppState.sortBy === 'price-desc') {
     list.sort((a, b) => b.launchPrice - a.launchPrice);
-  } else if (AppState.sortBy === 'rating') {
-    list.sort((a, b) => b.rating - a.rating);
   }
 
   // 5. Update Active Filter Badges UI
@@ -343,7 +444,7 @@ function renderProducts() {
       </div>
       
       <div class="product-info" onclick="openQuickView('${product.id}')" style="cursor: pointer;">
-        <span class="product-category-tag">${product.categoryLabel} • ⭐ ${product.rating}</span>
+        <span class="product-category-tag">${product.categoryLabel}</span>
         <h3 class="product-name">${product.name}</h3>
         
         <div class="product-price-row" style="margin-bottom: 0;">
@@ -384,7 +485,6 @@ function updateActiveFiltersUI() {
     let sText = AppState.sortBy;
     if (sText === 'price-asc') sText = 'Price: Low to High';
     if (sText === 'price-desc') sText = 'Price: High to Low';
-    if (sText === 'rating') sText = 'Highest Rated';
     tags.push(`<span class="active-filter-badge">Sort: ${sText} <button onclick="setSortOption('featured')">✕</button></span>`);
   }
 
@@ -499,8 +599,24 @@ function initReturnPolicyModal() {
     policyModal.addEventListener('click', (e) => {
       if (e.target === policyModal) policyModal.classList.remove('active');
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') policyModal.classList.remove('active');
+  }
+}
+
+function initShippingPolicyModal() {
+  const shippingModal = document.getElementById('shippingPolicyModal');
+  const closeButton = document.getElementById('shippingPolicyCloseBtn');
+
+  document.querySelectorAll('.trigger-shipping-policy').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (shippingModal) shippingModal.classList.add('active');
+    });
+  });
+
+  if (closeButton && shippingModal) {
+    closeButton.addEventListener('click', () => shippingModal.classList.remove('active'));
+    shippingModal.addEventListener('click', (event) => {
+      if (event.target === shippingModal) shippingModal.classList.remove('active');
     });
   }
 }
@@ -520,9 +636,6 @@ function initTermsModal() {
     closeButton.addEventListener('click', () => termsModal.classList.remove('active'));
     termsModal.addEventListener('click', (e) => {
       if (e.target === termsModal) termsModal.classList.remove('active');
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') termsModal.classList.remove('active');
     });
   }
 }
@@ -584,6 +697,27 @@ function initQuickViewModal() {
       if (e.target === DOM.quickViewModal) closeQuickView();
     });
   }
+  if (DOM.quickViewContent) {
+    DOM.quickViewContent.addEventListener('click', (event) => {
+      const sizeButton = event.target.closest('[data-product-size]');
+      if (sizeButton) {
+        DOM.quickViewContent.querySelectorAll('[data-product-size]').forEach((button) => {
+          const isSelected = button === sizeButton;
+          button.classList.toggle('selected', isSelected);
+          button.setAttribute('aria-pressed', String(isSelected));
+        });
+        window.__giSelectedSize = sizeButton.dataset.productSize;
+        const addButton = DOM.quickViewContent.querySelector('.quick-view-add-to-cart');
+        if (addButton) addButton.disabled = false;
+      }
+
+      const addButton = event.target.closest('.quick-view-add-to-cart');
+      if (addButton && !addButton.disabled && AppState.quickViewProduct) {
+        addToCart(AppState.quickViewProduct.id, window.__giSelectedSize);
+        closeQuickView();
+      }
+    });
+  }
 }
 
 function openQuickView(productId) {
@@ -591,7 +725,7 @@ function openQuickView(productId) {
   if (!product) return;
 
   AppState.quickViewProduct = product;
-  window.__giSelectedSize = 'M';
+  window.__giSelectedSize = null;
 
   const galleryImages = [product.image, product.secondaryImage, ...(product.additionalImages || [])].filter(Boolean);
 
@@ -610,8 +744,8 @@ function openQuickView(productId) {
         ` : ''}
       </div>
       <div class="quick-view-details" style="display: flex; flex-direction: column; min-width: 0;">
-        <span class="product-category-tag" style="font-size: 0.85rem;">${product.categoryLabel} • ⭐ ${product.rating}</span>
-        <h2 class="quick-view-title" style="font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--color-accent-maroon);">${product.name}</h2>
+        <span class="product-category-tag" style="font-size: 0.85rem;">${product.categoryLabel}</span>
+        <h2 class="quick-view-title" id="quickViewTitle" style="font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--color-accent-maroon);">${product.name}</h2>
         
         <div class="product-price-row quick-view-price-row" style="margin-bottom: 1.5rem; align-items: baseline;">
           <span class="launch-price" style="font-size: 1.8rem; color: var(--color-accent-maroon);">₹${product.launchPrice.toLocaleString()}</span>
@@ -633,24 +767,28 @@ function openQuickView(productId) {
               📏 View Size Guide
             </button>
           </div>
-          <div class="quick-view-size-options" style="display: flex; gap: 0.75rem;">
+          <div class="quick-view-size-options" role="group" aria-label="Choose a size">
             ${product.sizes.map(size => `
-              <button class="size-chip ${size === 'M' ? 'selected' : ''}" 
-                      style="width: 44px; height: 44px; font-size: 1rem; font-weight: 600;"
-                      onclick="this.parentElement.querySelectorAll('.size-chip').forEach(c=>c.classList.remove('selected')); this.classList.add('selected'); window.__giSelectedSize='${size}';">
-                ${size}
-              </button>
+              <button class="size-chip" type="button" data-product-size="${size}" aria-pressed="false">${size}</button>
             `).join('')}
           </div>
+          <p class="size-selection-hint" aria-live="polite">Choose a size to continue.</p>
         </div>
 
-        <button class="btn-place-order quick-view-add-to-cart" onclick="addToCart('${product.id}', window.__giSelectedSize); closeQuickView();" style="margin-top: auto; padding: 1.25rem;">
-          🛍️ Add to Shopping Bag • ₹${product.launchPrice.toLocaleString()}
+        <div class="product-delivery-note">
+          <span>Made to order · dispatched in 10–12 working days</span>
+          <span>₹150 flat shipping · shown in checkout</span>
+          <a href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">Need sizing help? Message us</a>
+        </div>
+
+        <button class="btn-place-order quick-view-add-to-cart" type="button" disabled style="margin-top: auto; padding: 1.25rem;">
+          ADD TO BAG · ₹${product.launchPrice.toLocaleString()}
         </button>
       </div>
     </div>
   `;
 
+  DOM.quickViewModal.setAttribute('aria-labelledby', 'quickViewTitle');
   DOM.quickViewModal.classList.add('active');
 }
 
@@ -689,13 +827,20 @@ function closeCartDrawer() {
 function quickAddToCart(productId) {
   const card = document.querySelector(`[data-product-id="${productId}"]`);
   const selectedSizeChip = card ? card.querySelector('.size-chip.selected') : null;
-  const size = selectedSizeChip ? selectedSizeChip.innerText : 'M';
-  addToCart(productId, size);
+  if (!selectedSizeChip) {
+    openQuickView(productId);
+    return;
+  }
+  addToCart(productId, selectedSizeChip.innerText);
 }
 
-function addToCart(productId, size = 'M') {
+function addToCart(productId, size) {
   const product = PRODUCTS_DATA.find(p => p.id === productId);
   if (!product) return;
+  if (!size) {
+    showToast('Choose a size before adding this piece to your bag.');
+    return;
+  }
 
   const existing = AppState.cart.find(item => item.product.id === productId && item.size === size);
 

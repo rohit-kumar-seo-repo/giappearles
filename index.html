@@ -45,10 +45,10 @@
       </button>
       <nav class="site-navigation" id="siteNavigation" aria-label="Main navigation">
         <ul class="nav-links">
-          <li><a href="#catalog" class="nav-link active">New Arrivals</a></li>
-          <li><a href="#catalog" class="nav-link">Dresses</a></li>
-          <li><a href="#catalog" class="nav-link">Collection</a></li>
-          <li><a href="#catalog" class="nav-link">Journal</a></li>
+          <li><a href="#catalog" class="nav-link active" data-shop-category="all">Shop All</a></li>
+          <li><a href="#catalog" class="nav-link" data-shop-category="dresses">Dresses</a></li>
+          <li><a href="#catalog" class="nav-link" data-shop-category="coords">Co-ord Sets</a></li>
+          <li><a href="#brand-story" class="nav-link">Our Story</a></li>
           <li class="mobile-nav-account">
             <a href="login.html#sign-in">Sign In</a>
             <a href="login.html#register">Create Account</a>
@@ -92,21 +92,27 @@
   <!-- ==========================================
        2. EDITORIAL HERO BANNER
        ========================================== -->
-  <section class="hero-section">
+  <section class="hero-section" aria-labelledby="heroTitle">
     <div class="hero-image-panel">
-      <img src="assets/images/optimized/Screenshot 2026-10-18 202136.jpg" alt="GI Apparel editorial look" class="hero-image" width="1212" height="861" fetchpriority="high" decoding="async" />
+      <img src="assets/images/main photo.png" alt="Model wearing a white and blue embroidered GI Apparel dress" class="hero-image" width="1447" height="1087" fetchpriority="high" decoding="async" />
     </div>
 
     <div class="hero-headline">
-      <h1>SUMMER ELEGANCE</h1>
-      <p>THE GI APPAREL COLLECTION</p>
+      <p class="hero-eyebrow">HANDCRAFTED · MADE TO ORDER</p>
+      <h1 id="heroTitle">Made for your <em>sunny days.</em></h1>
+      <p class="hero-description">Easy silhouettes, considered details, and pieces made just for you.</p>
       <div class="hero-actions">
-        <a href="#catalog" class="btn-primary">SHOP NOW</a>
-        <a href="#catalog" class="btn-secondary">EXPLORE LOOKBOOK</a>
+        <a href="#catalog" class="btn-primary" data-shop-category="all">SHOP THE EDIT</a>
+        <a href="#brand-story" class="btn-secondary">OUR APPROACH</a>
       </div>
     </div>
   </section>
 
+  <div class="hero-assurances" aria-label="About GI Apparel">
+    <span>Handcrafted pieces</span>
+    <span>Made to order</span>
+    <span>Dispatched in 10–12 working days</span>
+  </div>
 
 
   <!-- ==========================================
@@ -114,8 +120,8 @@
        ========================================== -->
   <main class="catalog-section" id="catalog">
     <div class="section-header">
-      <h2 class="section-title">The Collection Catalog</h2>
-      <p class="section-subtitle">Select a category or search below to explore our launch offerings</p>
+      <h2 class="section-title">The Summer Edit</h2>
+      <p class="section-subtitle">Discover handcrafted pieces made to order for warm days and easy dressing.</p>
     </div>
 
     <div class="catalog-controls-bar">
@@ -150,17 +156,34 @@
     </div>
   </main>
 
+  <section class="brand-story" id="brand-story" aria-labelledby="brandStoryTitle">
+    <div class="brand-story-image">
+      <img src="assets/images/optimized/gingham co-ord set1.jpg" alt="A pink gingham GI Apparel co-ord set, shown with its matching shorts" loading="lazy" decoding="async" />
+    </div>
+    <div class="brand-story-copy">
+      <p class="story-eyebrow">THE GI APPROACH</p>
+      <h2 id="brandStoryTitle">Made with care.<br /><em>Worn with ease.</em></h2>
+      <p>GI Apparel brings handcrafted details and easy silhouettes together in pieces made to order. Explore cotton, embroidery, and print-led styles designed for the days ahead.</p>
+      <div class="story-details">
+        <span>Handcrafted</span>
+        <span>Made to order</span>
+        <span>Made for sunny days</span>
+      </div>
+      <a href="#catalog" class="story-link" data-shop-category="all">DISCOVER THE EDIT <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
   <!-- ==========================================
        6. INTERACTIVE SIZE GUIDE MODAL (FROM PDF 1)
        ========================================== -->
-  <div class="modal-backdrop" id="sizeModal">
+  <div class="modal-backdrop" id="sizeModal" role="dialog" aria-modal="true" aria-labelledby="sizeModalTitle" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <h3>GI Apparel Size Guide</h3>
+          <h3 id="sizeModalTitle">GI Apparel Size Guide</h3>
           <p>Official Sizing Chart from GI Apparel Technical Specifications</p>
         </div>
-        <button class="modal-close-btn" id="sizeModalCloseBtn">✕</button>
+        <button class="modal-close-btn" id="sizeModalCloseBtn" type="button" aria-label="Close size guide">✕</button>
       </div>
 
       <div class="modal-body">
@@ -205,7 +228,7 @@
   </div>
 
   <!-- Return & Exchange Policy Modal -->
-  <div class="modal-backdrop" id="returnPolicyModal" role="dialog" aria-modal="true" aria-labelledby="returnPolicyTitle">
+  <div class="modal-backdrop" id="returnPolicyModal" role="dialog" aria-modal="true" aria-labelledby="returnPolicyTitle" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
@@ -297,8 +320,35 @@
     </div>
   </div>
 
+  <!-- Shipping & Delivery Policy -->
+  <div class="modal-backdrop" id="shippingPolicyModal" role="dialog" aria-modal="true" aria-labelledby="shippingPolicyTitle" aria-hidden="true" inert tabindex="-1">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h3 id="shippingPolicyTitle">Shipping &amp; Delivery</h3>
+          <p>Made to order, with care at every step.</p>
+        </div>
+        <button class="modal-close-btn" id="shippingPolicyCloseBtn" type="button" aria-label="Close shipping and delivery policy">✕</button>
+      </div>
+      <div class="modal-body policy-content">
+        <section class="policy-section">
+          <h4>When your order ships</h4>
+          <p>GI Apparel pieces are made to order and are dispatched within <strong>10–12 working days</strong>. Delivery time after dispatch varies by destination and courier.</p>
+        </section>
+        <section class="policy-section">
+          <h4>Shipping charge</h4>
+          <p>A flat <strong>₹150 shipping charge</strong> is added at checkout. Your final total is shown before you submit an order request.</p>
+        </section>
+        <section class="policy-section">
+          <h4>Need help?</h4>
+          <p>For an update about an existing order, contact GI Apparel on <a href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">WhatsApp</a> or email <a href="mailto:hello.giapparel@gmail.com">hello.giapparel@gmail.com</a>.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <!-- Terms & Conditions Modal -->
-  <div class="modal-backdrop" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+  <div class="modal-backdrop" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="termsTitle" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
@@ -380,11 +430,11 @@
   <!-- ==========================================
        7. QUICK VIEW MODAL
        ========================================== -->
-  <div class="modal-backdrop" id="quickViewModal">
+  <div class="modal-backdrop" id="quickViewModal" role="dialog" aria-modal="true" aria-label="Product details" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card" style="max-width: 900px;">
       <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
         <div></div>
-        <button class="modal-close-btn" id="quickViewCloseBtn">✕</button>
+        <button class="modal-close-btn" id="quickViewCloseBtn" type="button" aria-label="Close product details">✕</button>
       </div>
       <div class="modal-body" id="quickViewContent" style="padding-top: 0;">
         <!-- Populated by app.js -->
@@ -395,11 +445,11 @@
   <!-- ==========================================
        8. SLIDE-OVER CART DRAWER
        ========================================== -->
-  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop">
+  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle" aria-hidden="true" inert tabindex="-1">
     <div class="cart-drawer">
       <div class="cart-header">
-        <h3>Shopping Bag</h3>
-        <button class="modal-close-btn" id="cartDrawerCloseBtn">✕</button>
+        <h3 id="cartDrawerTitle">Shopping Bag</h3>
+        <button class="modal-close-btn" id="cartDrawerCloseBtn" type="button" aria-label="Close shopping bag">✕</button>
       </div>
 
       <div class="cart-items-list" id="cartItemsList">
@@ -420,7 +470,7 @@
           <span id="cartTotalPrice">₹0</span>
         </div>
         <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.5rem; text-align: center;">
-          * Shipping charges additional. Made-to-order dispatch in 10-12 working days.
+          ₹150 flat shipping · Made-to-order dispatch in 10–12 working days.
         </p>
         <button class="btn-checkout" id="checkoutBtn">Proceed to Checkout</button>
       </div>
@@ -430,11 +480,11 @@
   <!-- ==========================================
        8B. INTERACTIVE CHECKOUT MODAL
        ========================================== -->
-  <div class="modal-backdrop" id="checkoutModal">
+  <div class="modal-backdrop" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card checkout-modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <h3>Delivery &amp; Payment</h3>
+          <h3 id="checkoutTitle">Delivery &amp; Payment</h3>
           <p>Your total is confirmed securely when your order is submitted.</p>
         </div>
         <button class="modal-close-btn" id="checkoutModalCloseBtn" type="button" aria-label="Close checkout">✕</button>
@@ -546,14 +596,14 @@
   <!-- ==========================================
        8D. FILTER MODAL
        ========================================== -->
-  <div class="modal-backdrop" id="filterModal">
+  <div class="modal-backdrop" id="filterModal" role="dialog" aria-modal="true" aria-labelledby="filterModalTitle" aria-hidden="true" inert tabindex="-1">
     <div class="modal-card" style="max-width: 400px;">
       <div class="modal-header">
         <div>
-          <h3>Filters & Sort</h3>
+          <h3 id="filterModalTitle">Filters &amp; Sort</h3>
           <p>Refine your collection view</p>
         </div>
-        <button class="modal-close-btn" id="filterModalCloseBtn">✕</button>
+        <button class="modal-close-btn" id="filterModalCloseBtn" type="button" aria-label="Close filters and sort">✕</button>
       </div>
       <div class="modal-body">
         <div style="margin-bottom: 2rem;">
@@ -562,7 +612,6 @@
             <option value="featured">Featured Collection</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
-            <option value="rating">Highest Rated</option>
           </select>
         </div>
         <div>
@@ -597,18 +646,18 @@
       <div class="footer-col">
         <h4>Shop Collections</h4>
         <ul>
-          <li><a href="#catalog">Azore Blooms Series</a></li>
-          <li><a href="#catalog">Midnight Halter Co-ords</a></li>
-          <li><a href="#catalog">Rosie Gingham Sets</a></li>
-          <li><a href="#catalog">Cotton Midi Dresses</a></li>
+          <li><a href="#catalog" data-shop-category="dresses">Dresses</a></li>
+          <li><a href="#catalog" data-shop-category="coords">Co-ord Sets</a></li>
+          <li><a href="#catalog" data-shop-category="tops">Tops</a></li>
+          <li><a href="#catalog" data-shop-category="bottoms">Skirts &amp; Shorts</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
         <h4>Customer Care</h4>
         <ul>
-          <li><a href="#" class="trigger-size-guide">Interactive Size Guide</a></li>
-          <li><a href="#">Dispatch & Shipping Policy</a></li>
+          <li><a href="#sizeModal" class="trigger-size-guide">Size Guide</a></li>
+          <li><a href="#shippingPolicyModal" class="trigger-shipping-policy">Shipping &amp; Delivery</a></li>
           <li><a href="#return-policy" class="trigger-return-policy">Return & Exchange Policy</a></li>
           <li><a href="#terms" class="trigger-terms">Terms & Conditions</a></li>
         </ul>
@@ -619,14 +668,14 @@
         <ul>
           <li><a href="mailto:hello.giapparel@gmail.com">Email: hello.giapparel@gmail.com</a></li>
           <li><a href="https://wa.me/919536429777" target="_blank" rel="noopener noreferrer">WhatsApp: +91 9536429777</a></li>
-          <li><a href="#">Mon - Sat: 10:00 AM - 7:00 PM</a></li>
+          <li><span>Mon–Sat: 10:00 AM–7:00 PM</span></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
       <p>© 2026 GI Apparel. All rights reserved. Made-to-order luxury fashion.</p>
-      <p>Official Launch Store • Powered by GI Apparel Design System</p>
+      <p>Handcrafted · Made to order</p>
     </div>
   </footer>
 
