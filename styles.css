@@ -2249,7 +2249,15 @@ a {
   opacity: 1;
 }
 
+.quick-view-size-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .quick-view-size-options .size-chip {
+  flex: 0 0 auto;
   min-width: 48px;
   min-height: 46px;
   transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
