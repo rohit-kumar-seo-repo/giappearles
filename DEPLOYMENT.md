@@ -27,6 +27,8 @@ Before deploying, confirm the exact Supabase hostname with `nslookup` or `Resolv
 This is a static HTML/CSS/JavaScript site. Vercel builds it with `npm run build` and serves the generated `dist/` directory; no framework migration or SPA rewrite is needed.
 `npm run build` does not require Supabase environment variables. Vercel serves `/supabase-config.js` through a runtime function, which reads the public values from the Vercel runtime environment.
 
+Checkout accepts requests from `giapparel.in`, `www.giapparel.in`, `APP_ORIGIN`, and the deployment's own Vercel addresses (`VERCEL_URL`, `VERCEL_BRANCH_URL` and `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel sets automatically), so test orders can be placed on the `*.vercel.app` URL before the domain's DNS is moved. The project runs on Node.js 22 (`engines` in `package.json`); `vercel.json` sets `"framework": null` so Vercel uses the plain build/output settings.
+
 Set these Vercel **Production** environment variables before deploying the order backend:
 
 - `SUPABASE_URL`: the existing GI-Apparel Supabase project URL.
@@ -93,6 +95,6 @@ Serverless endpoints:
 
 ## Launch limitations
 
-The application code for checkout integration is present. The Supabase orders/rate-limiter migration has already been run in the existing project; do **not** run it again. Production service credentials, Razorpay webhook, Resend sender verification, GitHub repository, and Vercel deployment still need configuration and end-to-end testing. Do not accept live orders/payments until those steps have been completed successfully. Cart state is still browser-memory-only and does not persist across refreshes.
+The application code for checkout integration is present. The Supabase orders/rate-limiter migration has already been run in the existing project; do **not** run it again. Production service credentials, Razorpay webhook, Resend sender verification, GitHub repository, and Vercel deployment still need configuration and end-to-end testing. Do not accept live orders/payments until those steps have been completed successfully. The shopping bag is saved in the shopper's browser (product IDs, sizes and quantities only), so it survives refreshes and the trip to the sign-in page; the server still re-prices every order. If online checkout fails for any reason, the checkout offers to send the same bag to GI Apparel on WhatsApp so the sale is not lost.
 
-The current image assets total about 48 MB. Product card images load lazily, but image resizing and modern WebP/AVIF derivatives should be completed and visually checked before a high-traffic launch.
+The build deploys only the compressed images in `assets/images/optimized/` (about 7 MB); the full-size PNG originals in `assets/images/` stay in the repository as source files and are not deployed. The build fails if a page or stylesheet references an image that is missing from the output. The hero uses an 800px image on phones, and social/WhatsApp link previews use `assets/images/optimized/gi-apparel-share.jpg` (1200×630). WebP/AVIF derivatives are a possible later improvement.

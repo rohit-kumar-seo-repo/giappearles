@@ -245,7 +245,12 @@ export function isAllowedOrigin(request) {
       return false;
     }
   }
-  if (process.env.VERCEL_URL) allowed.add(`https://${process.env.VERCEL_URL}`);
+  // Vercel serves the same deployment on its unique URL, its branch URL and
+  // the project's production *.vercel.app URL; allow all three first-party hosts.
+  for (const name of ['VERCEL_URL', 'VERCEL_BRANCH_URL', 'VERCEL_PROJECT_PRODUCTION_URL']) {
+    const host = process.env[name]?.trim();
+    if (host) allowed.add(`https://${host}`);
+  }
   if (process.env.NODE_ENV !== 'production') {
     allowed.add('http://localhost:4173');
     allowed.add('http://127.0.0.1:4173');

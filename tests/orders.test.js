@@ -154,3 +154,31 @@ test('prices display in Indian Rupees without floating-point paise loss', () => 
   assert.equal(formatRupees(184900), '₹1,849');
   assert.equal(formatRupees(15050), '₹150.5');
 });
+
+test('checkout accepts first-party Vercel hosts and rejects other origins', async () => {
+  const { isAllowedOrigin } = await import('../server/services.js');
+  const keys = ['VERCEL_URL', 'VERCEL_BRANCH_URL', 'VERCEL_PROJECT_PRODUCTION_URL', 'APP_ORIGIN', 'NODE_ENV'];
+  const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+  try {
+    process.env.NODE_ENV = 'production';
+    delete process.env.APP_ORIGIN;
+    process.env.VERCEL_URL = 'giappearles-abc123-team.vercel.app';
+    process.env.VERCEL_BRANCH_URL = 'giappearles-git-launch-team.vercel.app';
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = 'giappearles.vercel.app';
+    const allowed = (origin) => isAllowedOrigin({ headers: { origin } });
+
+    assert.equal(allowed('https://giapparel.in'), true);
+    assert.equal(allowed('https://www.giapparel.in'), true);
+    assert.equal(allowed('https://giappearles-abc123-team.vercel.app'), true);
+    assert.equal(allowed('https://giappearles-git-launch-team.vercel.app'), true);
+    assert.equal(allowed('https://giappearles.vercel.app'), true);
+    assert.equal(allowed('https://evil.example'), false);
+    assert.equal(allowed('http://localhost:3000'), false);
+    assert.equal(isAllowedOrigin({ headers: {} }), false);
+  } finally {
+    for (const key of keys) {
+      if (saved[key] === undefined) delete process.env[key];
+      else process.env[key] = saved[key];
+    }
+  }
+});

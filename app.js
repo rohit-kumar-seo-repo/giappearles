@@ -84,6 +84,7 @@ const DOM = {
   checkoutSuccessTitle: document.getElementById('checkoutSuccessTitle'),
   checkoutSuccessMessage: document.getElementById('checkoutSuccessMessage'),
   checkoutWhatsappLink: document.getElementById('checkoutWhatsappLink'),
+  checkoutHelpLink: document.getElementById('checkoutHelpLink'),
 
   // Toast Container
   toastContainer: document.getElementById('toastContainer')
@@ -938,7 +939,60 @@ function closeQuickView() {
 // ==========================================================================
 // 7. SLIDE-OVER SHOPPING CART DRAWER MODULE
 // ==========================================================================
+// The bag is kept in this browser so it survives refreshes and the trip to
+// the sign-in page. Only product IDs, sizes and quantities are stored; names
+// and prices always come from the current catalog, and the server re-prices
+// every order.
+const CART_STORAGE_KEY = 'gi-apparel-bag-v1';
+const WHATSAPP_NUMBER = '919536429777';
+
+function saveCart() {
+  try {
+    const lines = AppState.cart.map(item => ({ id: item.product.id, size: item.size, quantity: item.quantity }));
+    if (lines.length) window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines));
+    else window.localStorage.removeItem(CART_STORAGE_KEY);
+  } catch {
+    // Storage can be unavailable (private mode, blocked site data); the bag still works for this page view.
+  }
+}
+
+function restoreCart() {
+  let lines;
+  try {
+    lines = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]');
+  } catch {
+    return;
+  }
+  if (!Array.isArray(lines)) return;
+  const seen = new Set();
+  AppState.cart = lines.slice(0, 10).flatMap(line => {
+    const product = PRODUCTS_DATA.find(p => p.id === line?.id);
+    const key = `${line?.id}:${line?.size}`;
+    if (!product || !product.sizes.includes(line.size) || seen.has(key)) return [];
+    if (!Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 10) return [];
+    seen.add(key);
+    return [{ product, size: line.size, quantity: line.quantity }];
+  });
+}
+
+function whatsappOrderUrl() {
+  const lines = AppState.cart.map(item => (
+    `- ${item.product.name} (Size ${item.size}) x ${item.quantity} = Rs. ${(item.product.launchPrice * item.quantity).toLocaleString('en-IN')}`
+  ));
+  const text = lines.length
+    ? `Hello GI Apparel, I'd like to order:\n${lines.join('\n')}\nPlease confirm availability and payment details.`
+    : 'Hello GI Apparel, I need help placing an order.';
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+}
+
 function initCartDrawer() {
+  restoreCart();
+  updateCartUI();
+  window.addEventListener('storage', (event) => {
+    if (event.key !== CART_STORAGE_KEY) return;
+    restoreCart();
+    updateCartUI();
+  });
   if (DOM.cartTriggerBtn) {
     DOM.cartTriggerBtn.addEventListener('click', openCartDrawer);
   }
@@ -1014,6 +1068,7 @@ function updateCartQty(productId, size, change) {
 }
 
 function updateCartUI() {
+  saveCart();
   const totalItems = AppState.cart.reduce((sum, item) => sum + item.quantity, 0);
   if (DOM.cartCountBadge) DOM.cartCountBadge.innerText = totalItems;
 
@@ -1197,6 +1252,15 @@ function setCheckoutStatus(type, message) {
   if (!DOM.checkoutStatus) return;
   DOM.checkoutStatus.dataset.type = type;
   DOM.checkoutStatus.innerText = message;
+  // If online checkout fails, never lose the sale: offer the same bag on WhatsApp.
+  if (DOM.checkoutHelpLink) {
+    const failed = type === 'error' && AppState.cart.length > 0;
+    DOM.checkoutHelpLink.href = failed ? whatsappOrderUrl() : `https://wa.me/${WHATSAPP_NUMBER}`;
+    DOM.checkoutHelpLink.innerText = failed
+      ? 'Send this order to GI Apparel on WhatsApp instead'
+      : 'Need help? Contact GI Apparel on WhatsApp.';
+    DOM.checkoutHelpLink.classList.toggle('is-fallback', failed);
+  }
 }
 
 function showCheckoutSuccess(title, message, orderNumber) {

@@ -52,11 +52,34 @@ for (const file of requiredFiles) {
   await cp(path.join(projectRoot, file), path.join(outputDirectory, file));
 }
 
+// The full-size PNG originals in assets/images/ are source material only; the
+// site serves the compressed copies in assets/images/optimized/. Leaving the
+// originals out keeps about 23 MB of unused images off the deployment.
+const originalImagesDirectory = path.join(projectRoot, 'assets', 'images');
 await cp(
   path.join(projectRoot, 'assets'),
   path.join(outputDirectory, 'assets'),
-  { recursive: true }
+  {
+    recursive: true,
+    filter: (source) => !(
+      path.dirname(source) === originalImagesDirectory
+      && path.extname(source).toLowerCase() === '.png'
+    )
+  }
 );
+
+// Fail the build if a page or stylesheet points at an image that is not deployed.
+for (const file of ['index.html', 'login.html', 'styles.css', 'data.js', 'app.js']) {
+  const source = await readFile(path.join(projectRoot, file), 'utf8');
+  for (const [reference] of source.matchAll(/assets\/images\/[^"'`()\n,]+?\.(?:jpe?g|png|webp|svg)/g)) {
+    const relative = decodeURIComponent(reference);
+    try {
+      await readFile(path.join(outputDirectory, relative));
+    } catch {
+      throw new Error(`${file} references ${relative}, which is not in the build output.`);
+    }
+  }
+}
 
 await cp(
   path.join(projectRoot, 'node_modules', '@supabase', 'supabase-js', 'dist', 'umd', 'supabase.js'),
