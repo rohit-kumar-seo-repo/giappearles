@@ -73,6 +73,8 @@
     const PAYMENT_STATUSES = ['unpaid','pending','paid','failed','refunded'];
     const STATUS_LABELS = {request_received:'New request',pending_payment:'Awaiting payment',confirmed:'Confirmed',payment_initialization_failed:'Payment setup failed',processing:'Processing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',unpaid:'Unpaid',pending:'Pending',paid:'Paid',failed:'Failed',refunded:'Refunded'};
     const ui = Object.fromEntries(['login-panel','login-form','admin-password','login-button','login-message','dashboard','dashboard-message','logout-button','status-filter','search-filter','refresh-button','orders-list','order-count','summary-new','summary-confirmed','summary-shipped','summary-delivered','summary-revenue'].map(id => [id,document.getElementById(id)]));
+    // Aliases for the elements the code reads by camelCase name.
+    Object.assign(ui, { loginPanel: ui['login-panel'], logoutButton: ui['logout-button'], orderCount: ui['order-count'], ordersList: ui['orders-list'] });
     let adminPassword = '';
     let orders = [];
 
