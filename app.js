@@ -187,6 +187,11 @@ function initLaunchOffer() {
   savingsLabel.textContent = `₹${maximumSavings.toLocaleString('en-IN')}`;
 }
 
+function productPagePath(product) {
+  const slug = product.name.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return '/products/' + slug + '/';
+}
+
 function initFeaturedCarousel() {
   const rail = document.getElementById('featuredRail');
   const previousButton = document.getElementById('featuredEditPrev');
@@ -205,7 +210,9 @@ function initFeaturedCarousel() {
     <article class="featured-product" data-featured-product="${product.id}">
       <div class="featured-product-image-wrap">
         <span class="featured-product-badge ${product.isBundle ? 'is-bundle' : ''}">${product.badge}</span>
-        <img src="${encodeURI(product.image)}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 78vw, (max-width: 1024px) 40vw, 23vw" alt="${product.name}" loading="lazy" decoding="async" />
+        <a class="featured-product-image-link" href="${productPagePath(product)}" aria-label="View ${product.name}">
+          <img src="${encodeURI(product.image)}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 78vw, (max-width: 1024px) 40vw, 23vw" alt="${product.name}" loading="lazy" decoding="async" />
+        </a>
       </div>
       <div class="featured-product-info">
         <span class="featured-product-category">${product.categoryLabel}</span>
@@ -215,7 +222,7 @@ function initFeaturedCarousel() {
           <s>₹${product.displayPrice.toLocaleString('en-IN')}</s>
           <span>Save ₹${(product.displayPrice - product.launchPrice).toLocaleString('en-IN')}</span>
         </div>
-        <button class="featured-product-link" type="button" data-featured-open="${product.id}" aria-label="View details for ${product.name}">View details <span aria-hidden="true">↗</span></button>
+        <a class="featured-product-link" href="${productPagePath(product)}" aria-label="View details for ${product.name}">View details <span aria-hidden="true">↗</span></a>
       </div>
     </article>
   `).join('');
@@ -243,10 +250,6 @@ function initFeaturedCarousel() {
 
   previousButton.addEventListener('click', () => scrollRail(-1));
   nextButton.addEventListener('click', () => scrollRail(1));
-  rail.addEventListener('click', (event) => {
-    const openButton = event.target.closest('[data-featured-open]');
-    if (openButton) openQuickView(openButton.dataset.featuredOpen);
-  });
   rail.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
@@ -566,15 +569,17 @@ function renderProducts() {
     <article class="product-card" data-product-id="${product.id}">
       <div class="product-image-wrap">
         <span class="badge-launch ${product.isBundle ? 'badge-bundle' : ''}">${product.badge}</span>
-        <img src="${product.image}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="${product.name}" class="product-image" loading="lazy" decoding="async" />
+        <a class="product-image-link" href="${productPagePath(product)}" aria-label="View ${product.name}">
+          <img src="${product.image}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="${product.name}" class="product-image" loading="lazy" decoding="async" />
+        </a>
         <div class="quick-actions-overlay">
-          <button class="btn-quick-action" type="button" aria-label="View details for ${product.name}" onclick="openQuickView('${product.id}')">View Details</button>
+          <a class="btn-quick-action" href="${productPagePath(product)}" aria-label="View details for ${product.name}">View Details</a>
         </div>
       </div>
       
       <div class="product-info">
         <span class="product-category-tag">${product.categoryLabel}</span>
-        <h3 class="product-name"><button class="product-name-button" type="button" aria-label="View details for ${product.name}" onclick="openQuickView('${product.id}')">${product.name}</button></h3>
+        <h3 class="product-name"><a class="product-name-button" href="${productPagePath(product)}" aria-label="View details for ${product.name}">${product.name}</a></h3>
         
         <div class="product-price-row" style="margin-bottom: 0;">
           <span class="launch-price">₹${product.launchPrice.toLocaleString()}</span>
@@ -1006,6 +1011,12 @@ function initCartDrawer() {
   }
   if (DOM.checkoutBtn) {
     DOM.checkoutBtn.addEventListener('click', openCheckoutModal);
+  }
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('openBag') === '1') {
+    url.searchParams.delete('openBag');
+    window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    requestAnimationFrame(openCartDrawer);
   }
 }
 
