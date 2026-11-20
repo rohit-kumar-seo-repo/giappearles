@@ -182,3 +182,31 @@ test('checkout accepts first-party Vercel hosts and rejects other origins', asyn
     }
   }
 });
+
+test('online payment is offered only with Razorpay keys, and only live keys in production', async () => {
+  const { onlinePaymentsEnabled } = await import('../server/services.js');
+  const keys = ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'VERCEL_ENV'];
+  const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+  try {
+    for (const key of keys) delete process.env[key];
+    assert.equal(onlinePaymentsEnabled(), false, 'no keys');
+
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_abc';
+    process.env.RAZORPAY_KEY_SECRET = 'secret';
+    assert.equal(onlinePaymentsEnabled(), true, 'test keys outside Vercel production');
+    process.env.VERCEL_ENV = 'preview';
+    assert.equal(onlinePaymentsEnabled(), true, 'test keys on previews');
+    process.env.VERCEL_ENV = 'production';
+    assert.equal(onlinePaymentsEnabled(), false, 'test keys must not take production payments');
+
+    process.env.RAZORPAY_KEY_ID = 'rzp_live_abc';
+    assert.equal(onlinePaymentsEnabled(), true, 'live keys in production');
+    delete process.env.RAZORPAY_KEY_SECRET;
+    assert.equal(onlinePaymentsEnabled(), false, 'missing secret');
+  } finally {
+    for (const key of keys) {
+      if (saved[key] === undefined) delete process.env[key];
+      else process.env[key] = saved[key];
+    }
+  }
+});

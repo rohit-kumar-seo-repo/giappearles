@@ -434,7 +434,10 @@ elements.registerForm.addEventListener('submit', async (event) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } }
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: `${window.location.origin}/login.html#sign-in`
+      }
     });
     if (error) throw error;
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {

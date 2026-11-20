@@ -1227,6 +1227,7 @@ async function refreshCheckoutQuote() {
     DOM.checkoutItemsTotal.innerText = formatCheckoutMoney(quote.itemSubtotalPaise);
     DOM.checkoutShippingTotal.innerText = formatCheckoutMoney(quote.shippingPaise);
     DOM.checkoutGrandTotal.innerText = formatCheckoutMoney(quote.totalPaise);
+    setOnlinePaymentAvailable(quote.onlinePayments === true);
     DOM.submitOrderBtn.disabled = false;
     setCheckoutStatus('', '');
   } catch (error) {
@@ -1234,6 +1235,21 @@ async function refreshCheckoutQuote() {
     DOM.checkoutShippingTotal.innerText = '—';
     DOM.checkoutGrandTotal.innerText = '—';
     setCheckoutStatus('error', `${error.message} Please try again later or contact GI Apparel on WhatsApp.`);
+  }
+}
+
+// The server reports whether online payment is configured; until it is, only
+// the offline payment request is offered.
+function setOnlinePaymentAvailable(available) {
+  const option = document.getElementById('onlinePaymentOption');
+  if (!option || !DOM.checkoutForm) return;
+  option.hidden = !available;
+  if (!available && selectedPaymentMethod() === 'razorpay') {
+    const offline = DOM.checkoutForm.querySelector('input[name="paymentMethod"][value="offline"]');
+    if (offline) {
+      offline.checked = true;
+      offline.dispatchEvent(new Event('change'));
+    }
   }
 }
 

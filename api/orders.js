@@ -7,6 +7,7 @@ import {
   getAuthenticatedUser,
   isAllowedOrigin,
   notifyOwner,
+  onlinePaymentsEnabled,
   orderNotificationEnvironment,
   supabaseRequest
 } from '../server/services.js';
@@ -37,7 +38,8 @@ export default async function handler(request, response) {
         itemSubtotalPaise: quote.itemSubtotalPaise,
         shippingPaise: quote.shippingPaise,
         totalPaise: quote.totalPaise,
-        currency: 'INR'
+        currency: 'INR',
+        onlinePayments: onlinePaymentsEnabled()
       });
     }
 
@@ -49,6 +51,9 @@ export default async function handler(request, response) {
     if (body.website) return fail(response, 400, 'Invalid checkout request.');
     if (!['offline', 'razorpay'].includes(body.paymentMethod)) {
       throw new InputError('Choose an available payment method.');
+    }
+    if (body.paymentMethod === 'razorpay' && !onlinePaymentsEnabled()) {
+      throw new InputError('Online payment is not available yet. Please choose the offline payment request.');
     }
     if (!await consumeOrderRateLimit(request)) {
       return fail(response, 429, 'Too many order attempts. Please wait a few minutes and try again.');

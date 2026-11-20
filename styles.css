@@ -1328,6 +1328,7 @@ a {
   cursor: pointer; background-color: var(--color-bg-cream); transition: var(--transition-fast); 
 }
 .payment-card input[type="radio"] { margin-top: 3px; accent-color: var(--color-accent-gold); }
+.payment-card[hidden] { display: none; }
 .payment-card.active { border-color: var(--color-accent-gold); background-color: rgba(212, 175, 55, 0.05); }
 
 .payment-title-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }

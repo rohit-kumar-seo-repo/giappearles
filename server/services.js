@@ -107,6 +107,17 @@ export async function consumeOrderRateLimit(request) {
   return result;
 }
 
+// Online payment is offered only when Razorpay keys are configured. On the
+// production deployment it also requires live keys: Razorpay test keys accept
+// public test cards, so they must never mark real storefront orders as paid.
+export function onlinePaymentsEnabled() {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim() || '';
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() || '';
+  if (!keyId || !keySecret) return false;
+  if (process.env.VERCEL_ENV === 'production') return keyId.startsWith('rzp_live_');
+  return true;
+}
+
 export function razorpayCredentials() {
   return {
     keyId: requiredEnv('RAZORPAY_KEY_ID'),
