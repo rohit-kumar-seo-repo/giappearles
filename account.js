@@ -545,8 +545,15 @@ elements.cancelAddressBtn.addEventListener('click', () => {
   clearMessage(elements.addressMessage);
 });
 elements.addressForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const button = elements.addressForm.querySelector('button[type="submit"]');
+  // Saving takes a few round trips; block repeat clicks so one address is not saved twice.
+  if (button?.disabled) return;
+  if (button) setBusy(button, true, 'Saving…');
   saveAddress(event).catch((error) => {
     setMessage(elements.addressMessage, error.message || 'Could not save the address.');
+  }).finally(() => {
+    if (button) setBusy(button, false);
   });
 });
 
