@@ -3026,3 +3026,23 @@ a {
   .brand-marquee-viewport { mask-image: none; }
   .featured-rail { scroll-behavior: auto; }
 }
+
+/* ==========================================================================
+   READABILITY: minimum text sizes and aligned price digits
+   (matches the owner dashboard; overrides the smaller sizes above)
+   ========================================================================== */
+.launch-price, .display-price, .save-pill, .featured-product-prices, .cart-item-price-row,
+.breakdown-row, .cart-summary, #checkoutItemsTotal, #checkoutShippingTotal, #checkoutGrandTotal {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.nav-link { font-size: 0.75rem; }
+.cart-count-badge { font-size: 0.7rem; }
+.badge-launch, .featured-product-badge { font-size: 0.7rem; letter-spacing: 0.06em; }
+.product-category-tag, .featured-product-category { font-size: 0.75rem; letter-spacing: 0.04em; }
+.display-price { font-size: 0.8125rem; }
+.save-pill, .discount-badge-pill { font-size: 0.72rem; }
+.featured-product-prices span { font-size: 0.78rem; }
+.hero-headline .hero-eyebrow, .launch-offer-label, .featured-edit-count { font-size: 0.72rem; }
+.hero-actions .btn-primary, .hero-actions .btn-secondary, .quick-actions-overlay .btn-quick-action,
+.launch-offer-bar a, .brand-marquee-group { font-size: 0.75rem; }
+.hero-assurances, .featured-product-link, .footer-shop-link, .footer-bottom { font-size: 0.8125rem; }
