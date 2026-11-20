@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f4ede7">
+  <title>Owner Dashboard | GI Apparel</title>
+  <style>
+    :root{color-scheme:light;--maroon:#6b1f2d;--cream:#f4ede7;--paper:#fffdfb;--ink:#30282a;--muted:#786c6d;--line:#e5d8d4;--soft:#f3e6e4;--green:#286247;--red:#9b3040;font-family:Inter,"Avenir Next",Avenir,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream)}
+    *{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-width:320px;background:var(--cream)}button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}
+    .shell{width:min(1160px,100%);margin:auto;padding:24px 18px 56px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:8px 0 22px;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px;color:var(--maroon);text-decoration:none}.mark{display:grid;width:42px;height:42px;place-items:center;border:1px solid var(--maroon);border-radius:50%;font:17px Georgia,serif;letter-spacing:-.08em}
+    .brand-name{display:block;font-size:13px;font-weight:750;letter-spacing:.2em}.brand-caption{display:block;margin-top:4px;color:var(--muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+    .logout,.secondary{min-height:42px;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--maroon);cursor:pointer;font-size:12px;font-weight:700}.logout:hover,.secondary:hover{border-color:var(--maroon);background:var(--paper)}
+    .intro{padding:34px 0 24px}.eyebrow{margin:0 0 8px;color:var(--maroon);font-size:11px;font-weight:750;letter-spacing:.17em;text-transform:uppercase}h1{margin:0;font:400 clamp(31px,6vw,46px)/1.05 Georgia,"Times New Roman",serif;letter-spacing:-.035em}.intro-copy{max-width:600px;margin:12px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+    .panel{border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:0 16px 48px rgba(67,39,42,.055)}.login{max-width:460px;padding:28px}.login h2{margin:0 0 8px;font:400 26px Georgia,serif}.login p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.55}.login-form{display:grid;gap:12px}
+    .label{display:block;margin-bottom:7px;color:var(--ink);font-size:11px;font-weight:750;letter-spacing:.05em}.login input,.filters input,.filters select,.edit-fields select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;outline:none;background:white;color:var(--ink)}
+    input:focus,select:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(107,31,45,.11)}.primary{display:inline-flex;min-height:44px;align-items:center;justify-content:center;padding:0 19px;border:1px solid var(--maroon);border-radius:999px;background:var(--maroon);color:#fff;cursor:pointer;font-size:12px;font-weight:750;transition:transform .18s ease,background .18s ease}.primary:hover:not(:disabled){transform:translateY(-1px);background:#54202a}.primary:disabled{cursor:wait;opacity:.65}
+    .notice{min-height:20px;margin:0!important;color:var(--muted);font-size:12px!important}.error{color:var(--red)!important}.success{color:var(--green)!important}
+    .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;margin:4px 0 23px}.metric{min-height:88px;padding:15px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,251,.8)}.metric-label{display:block;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.metric-value{display:block;margin-top:12px;color:var(--maroon);font:26px Georgia,serif}.revenue .metric-value{font:700 19px Inter,"Avenir Next",sans-serif;letter-spacing:-.03em}
+    .toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:0 0 15px}.toolbar h2{margin:0;font:400 25px Georgia,serif}.filters{display:flex;align-items:end;gap:9px}.filter-field{min-width:170px}.search-field{min-width:min(270px,38vw)}.secondary{background:var(--paper)}
+    .order-count{margin:0 0 11px;color:var(--muted);font-size:12px}.orders{display:grid;gap:14px}.order-card{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:0 8px 28px rgba(67,39,42,.035)}
+    .order-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid var(--line)}.order-number{margin:0;color:var(--maroon);font-size:14px;font-weight:750;overflow-wrap:anywhere}.order-date{margin:5px 0 0;color:var(--muted);font-size:12px}.badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}.badge{display:inline-flex;align-items:center;min-height:24px;padding:4px 9px;border-radius:999px;background:var(--soft);color:var(--maroon);font-size:10px;font-weight:750}.badge.payment{background:#efeae3;color:#5e5148}
+    .order-content{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;padding:18px}.section-label{display:block;margin:0 0 8px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.customer-name{margin:0 0 8px;font-size:15px;font-weight:700}.contact-row{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0}.contact-button{display:inline-flex;min-height:33px;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--maroon);text-decoration:none;font-size:11px;font-weight:750}.contact-button:hover:not([aria-disabled=true]){border-color:var(--maroon);background:var(--soft)}.contact-button[aria-disabled=true]{color:#9a8e8e;cursor:not-allowed;opacity:.65}.contact-detail,.address{margin:0 0 7px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}.address{color:var(--muted)}
+    .items{display:grid;gap:8px;margin:0;padding:0;list-style:none}.item{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid #f0e8e4}.item:last-child{padding-bottom:0;border:0}.item-name{font-size:13px;font-weight:650}.item-meta{flex:0 0 auto;color:var(--muted);font-size:11px;text-align:right}
+    .totals{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}.total-label{color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}.total-value{color:var(--maroon);font:25px Georgia,serif}.payment-method{margin:9px 0 0;color:var(--muted);font-size:12px}
+    .edit-panel{display:flex;flex-direction:column;gap:12px;margin:0 18px 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fcf8f5}.edit-title{margin:0;color:var(--maroon);font-size:12px;font-weight:750}.edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.edit-fields .label{font-size:10px}.edit-fields select{min-height:39px;padding:8px;font-size:12px}.edit-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.save{min-height:39px;font-size:11px}.save:disabled{border-color:#bda8aa;background:#bda8aa;cursor:default;opacity:.8}.save-message{margin:0;color:var(--muted);font-size:11px;text-align:right}
+    .empty{padding:35px 18px;border:1px dashed #cfbdb8;border-radius:14px;color:var(--muted);text-align:center}.dashboard-message{margin:12px 0 0;color:var(--muted);font-size:12px}.footer{margin:26px 0 0;color:var(--muted);font-size:11px;line-height:1.5;text-align:center}
+    @media(max-width:820px){.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.order-content{grid-template-columns:1fr;gap:16px}.toolbar{align-items:flex-start;flex-direction:column}.filters{width:100%}.filter-field,.search-field{min-width:0;flex:1}}
+    @media(max-width:520px){.shell{padding:16px 13px 42px}.topbar{padding-bottom:16px}.mark{width:38px;height:38px;font-size:16px}.brand-name{font-size:11px}.brand-caption{font-size:9px}.logout{min-height:37px;padding:0 13px;font-size:11px}.intro{padding:27px 0 19px}.summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{min-height:76px;padding:12px}.metric-value{margin-top:9px;font-size:23px}.revenue{grid-column:span 2}.toolbar h2{font-size:23px}.filters{align-items:stretch;flex-direction:column}.filter-field,.search-field{width:100%}.order-head{align-items:flex-start;flex-direction:column;padding:14px}.badges{justify-content:flex-start}.order-content{padding:14px}.edit-panel{margin:0 14px 14px}.edit-fields{grid-template-columns:1fr}.edit-actions{align-items:flex-start;flex-direction:column}.save-message{text-align:left}.login{padding:22px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="GI Apparel home"><span class="mark" aria-hidden="true">GI</span><span><span class="brand-name">GI APPAREL</span><span class="brand-caption">Owner dashboard</span></span></a>
+      <button class="logout" id="logout-button" type="button" hidden>Log out</button>
+    </header>
+    <main>
+      <section class="intro"><p class="eyebrow">Order management</p><h1>A closer look at every order.</h1><p class="intro-copy">Review customer details, follow each order through its journey, and keep payment records up to date.</p></section>
+      <section class="panel login" id="login-panel" aria-labelledby="login-title">
+        <h2 id="login-title">Owner sign in</h2><p>Enter the private dashboard password to view customer orders.</p>
+        <form class="login-form" id="login-form">
+          <label for="admin-password"><span class="label">Dashboard password</span><input id="admin-password" name="password" type="password" autocomplete="current-password" minlength="12" required></label>
+          <button class="primary" id="login-button" type="submit">Continue</button><p class="notice" id="login-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <section id="dashboard" aria-label="Order dashboard" hidden>
+        <div class="summary" aria-label="Order summary">
+          <article class="metric"><span class="metric-label">New</span><strong class="metric-value" id="summary-new">0</strong></article>
+          <article class="metric"><span class="metric-label">Confirmed</span><strong class="metric-value" id="summary-confirmed">0</strong></article>
+          <article class="metric"><span class="metric-label">Shipped</span><strong class="metric-value" id="summary-shipped">0</strong></article>
+          <article class="metric"><span class="metric-label">Delivered</span><strong class="metric-value" id="summary-delivered">0</strong></article>
+          <article class="metric revenue"><span class="metric-label">Paid revenue</span><strong class="metric-value" id="summary-revenue">₹0</strong></article>
+        </div>
+        <div class="toolbar"><h2>Recent orders</h2><div class="filters">
+          <label class="filter-field"><span class="label">Order status</span><select id="status-filter" aria-label="Filter orders by status"><option value="">All statuses</option></select></label>
+          <label class="search-field"><span class="label">Search orders</span><input id="search-filter" type="search" placeholder="Order number, name or phone" autocomplete="off"></label>
+          <button class="secondary" id="refresh-button" type="button">Refresh</button>
+        </div></div>
+        <p class="order-count" id="order-count" aria-live="polite"></p><div class="orders" id="orders-list" aria-live="polite"></div>
+        <p class="dashboard-message" id="dashboard-message" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <p class="footer">Customer details are private. Sign out when you finish managing orders.</p>
+  </div>
+  <script>
+    const API_PATH = '/api/admin';
+    const SESSION_KEY = 'gi-apparel-admin-password';
+    const ORDER_STATUSES = ['request_received','pending_payment','confirmed','payment_initialization_failed','processing','shipped','delivered','cancelled'];
+    const PAYMENT_STATUSES = ['unpaid','pending','paid','failed','refunded'];
+    const STATUS_LABELS = {request_received:'New request',pending_payment:'Awaiting payment',confirmed:'Confirmed',payment_initialization_failed:'Payment setup failed',processing:'Processing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',unpaid:'Unpaid',pending:'Pending',paid:'Paid',failed:'Failed',refunded:'Refunded'};
+    const ui = Object.fromEntries(['login-panel','login-form','admin-password','login-button','login-message','dashboard','dashboard-message','logout-button','status-filter','search-filter','refresh-button','orders-list','order-count','summary-new','summary-confirmed','summary-shipped','summary-delivered','summary-revenue'].map(id => [id,document.getElementById(id)]));
+    let adminPassword = '';
+    let orders = [];
+
+    function node(tag, className, value) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (value !== undefined) element.textContent = String(value);
+      return element;
+    }
+    function safeText(value, fallback) {
+      return value === undefined || value === null || value === '' ? (fallback || '—') : String(value);
+    }
+    function labelFor(value) {
+      return STATUS_LABELS[value] || safeText(value, 'Unknown').replaceAll('_',' ');
+    }
+    function money(paise) {
+      const amount = Number(paise);
+      if (!Number.isFinite(amount)) return '—';
+      return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:0,maximumFractionDigits:2}).format(amount / 100);
+    }
+    function dateInIst(value) {
+      const date = new Date(value);
+      if (!Number.isFinite(date.getTime())) return 'Date unavailable';
+      return new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'}).format(date) + ' IST';
+    }
+    function phone10(value) {
+      let digits = String(value || '').replace(/\D/g,'');
+      if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+      if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+      return /^\d{10}$/.test(digits) ? digits : '';
+    }
+    async function request(method, password, payload) {
+      const options = {method:method,headers:{'X-Admin-Password':password}};
+      if (payload) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(payload); }
+      const response = await fetch(API_PATH,options);
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) { const error = new Error('The dashboard password was not accepted.'); error.unauthorized = true; throw error; }
+      if (!response.ok) throw new Error(data.error || 'The request could not be completed.');
+      return data;
+    }
+    function notice(element, message, kind) {
+      element.textContent = message || '';
+      element.className = 'notice' + (kind ? ' ' + kind : '');
+    }
+    function signOut(message) {
+      adminPassword = '';
+      try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+      orders = [];
+      ui.ordersList.replaceChildren();
+      ui.orderCount.textContent = '';
+      ui.loginPanel.hidden = false;
+      ui.dashboard.hidden = true;
+      ui.logoutButton.hidden = true;
+      ui['admin-password'].value = '';
+      notice(ui['login-message'],message || 'You are signed out. Enter the dashboard password to continue.','');
+      ui['admin-password'].focus();
+    }
+    function showDashboard() {
+      ui.loginPanel.hidden = true;
+      ui.dashboard.hidden = false;
+      ui.logoutButton.hidden = false;
+    }
+    function updateSummary() {
+      ui['summary-new'].textContent = String(orders.filter(order => order.order_status === 'request_received').length);
+      ui['summary-confirmed'].textContent = String(orders.filter(order => order.order_status === 'confirmed').length);
+      ui['summary-shipped'].textContent = String(orders.filter(order => order.order_status === 'shipped').length);
+      ui['summary-delivered'].textContent = String(orders.filter(order => order.order_status === 'delivered').length);
+      const revenue = orders.reduce((sum,order) => order.payment_status === 'paid' ? sum + (Number(order.total_paise) || 0) : sum,0);
+      ui['summary-revenue'].textContent = money(revenue);
+    }
+    function addDetail(parent, title, value) {
+      parent.append(node('span','section-label',title),node('p','contact-detail',safeText(value)));
+    }
+    function contactLink(parent, title, href, newTab) {
+      const link = node('a','contact-button',title);
+      if (href) {
+        link.href = href;
+        if (newTab) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+      } else {
+        link.setAttribute('aria-disabled','true');
+        link.tabIndex = -1;
+      }
+      parent.append(link);
+    }
+    function statusSelect(values, current) {
+      const select = document.createElement('select');
+      for (const value of values) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = labelFor(value);
+        select.append(option);
+      }
+      if (values.includes(current)) select.value = current;
+      return select;
+    }
+    function statusField(title, values, current) {
+      const label = node('label','');
+      label.append(node('span','label',title));
+      const select = statusSelect(values,current);
+      label.append(select);
+      return {label:label,select:select};
+    }
+    function renderOrder(order) {
+      const customer = order.customer && typeof order.customer === 'object' ? order.customer : {};
+      const card = node('article','order-card');
+      const header = node('header','order-head');
+      const identity = document.createElement('div');
+      identity.append(node('h3','order-number',safeText(order.order_number,'Order')),node('p','order-date',dateInIst(order.created_at)));
+      const badges = node('div','badges');
+      badges.append(node('span','badge',labelFor(order.order_status)),node('span','badge payment',labelFor(order.payment_status)));
+      header.append(identity,badges);
+      card.append(header);
+
+      const content = node('div','order-content');
+      const customerPanel = document.createElement('section');
+      customerPanel.append(node('span','section-label','Customer'),node('p','customer-name',safeText(customer.name)));
+      const number = phone10(customer.phone);
+      const actions = node('div','contact-row');
+      contactLink(actions,'Call',number ? 'tel:+91' + number : '',false);
+      contactLink(actions,'WhatsApp',number ? 'https://wa.me/91' + number : '',true);
+      customerPanel.append(actions);
+      addDetail(customerPanel,'Phone',customer.phone);
+      addDetail(customerPanel,'Email',customer.email);
+      const addressParts = [customer.addressLine1,customer.addressLine2,customer.city,customer.state,customer.postalCode].filter(part => typeof part === 'string' && part.trim());
+      customerPanel.append(node('span','section-label','Delivery address'),node('p','address',addressParts.length ? addressParts.join(', ') : 'Address unavailable'));
+
+      const orderPanel = document.createElement('section');
+      orderPanel.append(node('span','section-label','Items'));
+      const itemList = node('ul','items');
+      const lines = Array.isArray(order.items) ? order.items : [];
+      if (lines.length) {
+        for (const item of lines) {
+          const row = node('li','item');
+          row.append(node('span','item-name',safeText(item && item.name,'Item')));
+          row.append(node('span','item-meta','Size ' + safeText(item && item.size) + ' · Qty ' + safeText(item && item.quantity)));
+          itemList.append(row);
+        }
+      } else itemList.append(node('li','item-name','No item details'));
+      orderPanel.append(itemList);
+      const totals = node('div','totals');
+      totals.append(node('span','total-label','Order total'),node('strong','total-value',money(order.total_paise)));
+      orderPanel.append(totals,node('p','payment-method','Payment method · ' + labelFor(safeText(order.payment_method,'offline'))));
+      content.append(customerPanel,orderPanel);
+      card.append(content);
+
+      const editor = node('section','edit-panel');
+      editor.append(node('p','edit-title','Update order'));
+      const fields = node('div','edit-fields');
+      const orderStatus = statusField('Order status',ORDER_STATUSES,order.order_status);
+      const paymentStatus = statusField('Payment status',PAYMENT_STATUSES,order.payment_status);
+      fields.append(orderStatus.label,paymentStatus.label);
+      editor.append(fields);
+      const actionsRow = node('div','edit-actions');
+      const save = node('button','primary save','Save changes');
+      save.type = 'button';
+      save.disabled = true;
+      const message = node('p','save-message','No unsaved changes');
+      actionsRow.append(save,message);
+      editor.append(actionsRow);
+      card.append(editor);
+      const updateSaveState = () => {
+        const changed = orderStatus.select.value !== order.order_status || paymentStatus.select.value !== order.payment_status;
+        save.disabled = !changed;
+        message.textContent = changed ? 'Unsaved changes' : 'No unsaved changes';
+        message.className = 'save-message';
+      };
+      orderStatus.select.addEventListener('change',updateSaveState);
+      paymentStatus.select.addEventListener('change',updateSaveState);
+      save.addEventListener('click',async () => {
+        save.disabled = true;
+        save.textContent = 'Saving…';
+        message.textContent = 'Saving updates…';
+        try {
+          const result = await request('POST',adminPassword,{id:String(order.id),order_status:orderStatus.select.value,payment_status:paymentStatus.select.value});
+          const index = orders.findIndex(candidate => candidate.id === order.id);
+          if (index !== -1) orders[index] = {...orders[index],...result.order};
+          Object.assign(order,result.order);
+          message.textContent = 'Changes saved.';
+          message.className = 'save-message success';
+          updateSummary();
+          updateSaveState();
+          message.textContent = 'Changes saved.';
+          message.className = 'save-message success';
+        } catch (error) {
+          if (error.unauthorized) { signOut('Your session expired. Enter the dashboard password again.'); return; }
+          message.textContent = error.message || 'Could not save these changes.';
+          message.className = 'save-message error';
+        } finally {
+          save.textContent = 'Save changes';
+          if (!ui.dashboard.hidden) {
+            save.disabled = orderStatus.select.value === order.order_status
+              && paymentStatus.select.value === order.payment_status;
+          }
+        }
+      });
+      return card;
+    }
+    function renderOrders() {
+      const query = ui['search-filter'].value.trim().toLocaleLowerCase('en-IN');
+      const selected = ui['status-filter'].value;
+      const visible = orders.filter(order => {
+        if (selected && order.order_status !== selected) return false;
+        const customer = order.customer && typeof order.customer === 'object' ? order.customer : {};
+        const haystack = [order.order_number,customer.name,customer.phone].map(value => String(value || '')).join(' ').toLocaleLowerCase('en-IN');
+        return !query || haystack.includes(query);
+      });
+      ui.ordersList.replaceChildren();
+      ui.orderCount.textContent = visible.length + (visible.length === 1 ? ' order shown' : ' orders shown');
+      if (!visible.length) { ui.ordersList.append(node('p','empty',orders.length ? 'No orders match these filters.' : 'No orders have arrived yet.')); return; }
+      for (const order of visible) ui.ordersList.append(renderOrder(order));
+    }
+    async function loadOrders() {
+      showDashboard();
+      ui['dashboard-message'].textContent = 'Loading your orders…';
+      ui['dashboard-message'].className = 'dashboard-message';
+      ui.ordersList.replaceChildren();
+      try {
+        const result = await request('GET',adminPassword);
+        orders = Array.isArray(result.orders) ? result.orders : [];
+        ui['dashboard-message'].textContent = '';
+        updateSummary();
+        renderOrders();
+      } catch (error) {
+        if (error.unauthorized) { signOut('Your session expired. Enter the dashboard password again.'); return; }
+        ui.ordersList.replaceChildren(node('p','empty','Orders could not be loaded. Please try again.'));
+        ui['dashboard-message'].textContent = error.message || 'Could not load orders.';
+        ui['dashboard-message'].className = 'dashboard-message error';
+      }
+    }
+    for (const value of ORDER_STATUSES) {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = labelFor(value);
+      ui['status-filter'].append(option);
+    }
+    ui['login-form'].addEventListener('submit',async event => {
+      event.preventDefault();
+      const password = ui['admin-password'].value;
+      if (password.length < 12) { notice(ui['login-message'],'Use the dashboard password supplied by the store owner.','error'); return; }
+      ui['login-button'].disabled = true;
+      ui['login-button'].textContent = 'Checking…';
+      notice(ui['login-message'],'','');
+      try {
+        await request('GET',password);
+        adminPassword = password;
+        sessionStorage.setItem(SESSION_KEY,password);
+        await loadOrders();
+      } catch (error) {
+        notice(ui['login-message'],error.unauthorized ? 'That password was not accepted. Please try again.' : (error.message || 'Could not connect to the dashboard.'),'error');
+      } finally {
+        ui['login-button'].disabled = false;
+        ui['login-button'].textContent = 'Continue';
+      }
+    });
+    ui['logout-button'].addEventListener('click',() => signOut());
+    ui['status-filter'].addEventListener('change',renderOrders);
+    ui['search-filter'].addEventListener('input',renderOrders);
+    ui['refresh-button'].addEventListener('click',loadOrders);
+    try { adminPassword = sessionStorage.getItem(SESSION_KEY) || ''; } catch { adminPassword = ''; }
+    if (adminPassword) loadOrders();
+  </script>
+</body>
+</html>

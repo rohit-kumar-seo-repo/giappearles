@@ -9,6 +9,7 @@ import { isIP } from 'node:net';
 import ordersHandler from './api/orders.js';
 import verifyHandler from './api/payments/verify.js';
 import webhookHandler from './api/payments/webhook.js';
+import adminHandler from './api/admin.js';
 import { publicSupabaseConfigSource } from './server/public-config.js';
 
 try {
@@ -166,6 +167,7 @@ const server = http.createServer(async (req, res) => {
 
     const routes = {
       '/api/orders': ordersHandler,
+      '/api/admin': adminHandler,
       '/api/payments/verify': verifyHandler,
       '/api/payments/webhook': webhookHandler,
     };
@@ -173,15 +175,16 @@ const server = http.createServer(async (req, res) => {
     const handler = routes[pathname];
 
     if (handler) {
-      if (req.method !== 'POST') {
-        res.setHeader('Allow', 'POST');
+      const allowedMethods = pathname === '/api/admin' ? ['GET', 'POST'] : ['POST'];
+      if (!allowedMethods.includes(req.method)) {
+        res.setHeader('Allow', allowedMethods.join(', '));
         sendJson(res, 405, { error: 'Method not allowed.' });
         return;
       }
 
       // Preserve the original request stream for Razorpay webhook
-      // signature verification.
-      if (pathname !== '/api/payments/webhook') {
+      // signature verification. GET requests do not have a JSON body.
+      if (req.method === 'POST' && pathname !== '/api/payments/webhook') {
         const body = await readJsonBody(req, res);
         if (body === null) return;
         req.body = body;

@@ -9,6 +9,7 @@ const outputDirectory = path.join(projectRoot, 'dist');
 
 const requiredFiles = [
   'index.html',
+  'admin.html',
   'login.html',
   'styles.css',
   'app.js',

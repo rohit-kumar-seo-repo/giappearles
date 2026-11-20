@@ -46,6 +46,12 @@ The runtime config endpoint validates the HTTPS project URL and browser-safe pub
 
 Create a GitHub repository with `main` as its production branch, then import that repository into Vercel. Select the **Other** framework preset if prompted. Use the repository root as the project root; the build and output settings are already in `vercel.json`. Add both Supabase variables to the Vercel Production environment, then deploy `main`.
 
+## Owner dashboard
+
+The private owner dashboard is available at **https://giapparel.in/admin**. It uses the existing `/api/admin` serverless route and the password stored in Vercel as `ADMIN_PASSWORD`; the dashboard keeps its copy only in the current browser tab session.
+
+In Vercel, add `ADMIN_PASSWORD` to the **Production** environment with at least 12 characters. Keep it out of Git, source files, chat, and `.env` files. To change it, replace the value in **Project → Settings → Environment Variables**, then redeploy Production so the serverless function picks up the new value. The Log out button clears the tab's session copy.
+
 ## Domain and HTTPS
 
 Add `giapparel.in` and `www.giapparel.in` to the Vercel project's **Settings → Domains**. Make `giapparel.in` the primary domain and configure Vercel to redirect `www.giapparel.in` to it. At the DNS provider, enter the exact records Vercel shows for domain verification. Typical Vercel records are:
