@@ -383,6 +383,65 @@
       .print-total { margin: 15px 0 0 auto; width: 260px; }
       .print-total p { display: flex; justify-content: space-between; }
     }
+
+    /* ---------- Readability: clearer type scale (overrides the sizes above) ---------- */
+    body { font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    /* Numbers in a clean sans with aligned digits; Playfair stays for headings and the logo */
+    .metric-value, .attention-total, .donut-center, .total-row, .line-item-price, .data-table td { font-variant-numeric: tabular-nums lining-nums; }
+    .metric-value { font-family: var(--sans); font-size: clamp(26px, 2.3vw, 32px); font-weight: 600; letter-spacing: -.015em; }
+    .attention-total, .donut-center { font-family: var(--sans); font-weight: 600; }
+    .attention-total { font-size: 15px; }
+    .order-card-total { font: 600 16px var(--sans); font-variant-numeric: tabular-nums lining-nums; }
+    .donut-center { font-size: 24px; }
+    .brand-apparel { font-size: 11px; }
+    .login-kicker, .eyebrow, .nav-label, .drawer-kicker { font-size: 12px; letter-spacing: .14em; }
+    .login-copy { font-size: 15px; }
+    .field-label, .login-error, .login-footnote { font-size: 13px; }
+    .primary-button, .subtle-button, .icon-button, .export-button { font-size: 14px; }
+    .nav-button { font-size: 15px; }
+    .updated-label, .result-count { font-size: 13px; }
+    .topbar-subtitle, .page-description, .panel-note { font-size: 14px; }
+    .panel-title { font-size: 21px; }
+    .metric-label { font-size: 13px; letter-spacing: .02em; }
+    .metric-note { font-size: 13px; }
+    .split-legend, .legend-inline, .status-legend-row { font-size: 13px; }
+    .trend-svg text { font-size: 12px; }
+    .product-name, .attention-primary { font-size: 14px; }
+    .product-count { font-size: 13px; }
+    .attention-secondary, .row-sub { font-size: 12.5px; }
+    .data-table thead th { font-size: 12px; }
+    .data-table tbody td, .order-no { font-size: 14px; }
+    .status-badge, .payment-badge { font-size: 12px; padding: 5px 10px; }
+    .control-select, .date-select, .search-wrap input { font-size: 14px; }
+    .filter-chip { font-size: 13px; min-height: 36px; }
+    .chip-count { font-size: 11px; min-width: 20px; height: 20px; }
+    .order-card-title { font-size: 15px; }
+    .order-card-customer, .empty-copy { font-size: 13px; }
+    .order-card-foot { font-size: 12.5px; }
+    .customer-name, .customer-card-name { font-size: 14px; }
+    .customer-contact, .customer-card-contact, .customer-card-meta { font-size: 12.5px; }
+    .whatsapp-mini, .contact-button { font-size: 13px; }
+    .drawer-meta { font-size: 13px; }
+    .timeline-item, .timeline-label { font-size: 14px; }
+    .timeline-note, .timeline-hint { font-size: 12.5px; }
+    .line-item-name, .line-item-price { font-size: 14px; }
+    .line-item-meta { font-size: 12.5px; }
+    .total-row { font-size: 14px; }
+    .total-row.grand { font-size: 17px; }
+    .customer-detail { font-size: 14px; }
+    .customer-detail strong { font-size: 11.5px; }
+    .drawer-footer-label { font-size: 12.5px; }
+    .drawer-footer .control-select { font-size: 14px; }
+    .toast { font-size: 14px; }
+    @media (max-width: 760px) {
+      .metric-value { font-size: clamp(22px, 6.4vw, 28px); }
+      .topbar-title { font-size: 17px; }
+      .topbar-subtitle { font-size: 12px; }
+      .page-description { font-size: 14px; }
+      .panel-title { font-size: 19px; }
+      .mobile-brand .brand-apparel { font-size: 9px; }
+      .mobile-nav .nav-button { font-size: 12px; }
+    }
   </style>
 </head>
 <body>
