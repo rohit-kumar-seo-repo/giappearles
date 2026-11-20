@@ -24,8 +24,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted powder blue midi dress in soft textured cotton fabric, with spaghetti straps, a fitted bodice, a gathered skirt and a scalloped embroidered hem.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "LAUNCH SALE",
-    rating: 4.9,
-    reviewsCount: 28,
     details: [
       "Fabric: Soft Textured Cotton Fabric",
       "Colour: Powder Blue",
@@ -49,8 +47,6 @@ const PRODUCTS_DATA = [
     description: "Sleek and sophisticated midnight black halter neck top crafted with high-grade satin blend. Features a elegant tie-back halter neck for an effortless evening chic aesthetic.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "THE EDIT",
-    rating: 4.8,
-    reviewsCount: 34,
     details: [
       "Fabric: Luxe Satin Poly-Blend",
       "Neckline: High Halter Neck with Back Tie",
@@ -72,8 +68,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted pink and white cotton gingham halter-neck top with a shirred bodice and softly flared peplum hem.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
-    rating: 4.9,
-    reviewsCount: 22,
     details: [
       "Fabric: Cotton Gingham Fabric",
       "Colour: Pink & White Checks",
@@ -97,8 +91,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted deep navy blue halter-neck co-ord set in textured eyelet fabric, featuring a ruched twist-bust detail and fitted silhouette.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "BUNDLE SAVE ₹400",
-    rating: 5.0,
-    reviewsCount: 42,
     details: [
       "Fabric: Textured Eyelet Fabric",
       "Colour: Deep Navy Blue",
@@ -121,8 +113,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted powder blue mini dress in soft textured cotton fabric, with spaghetti straps, a gathered skirt and an embroidered scalloped hem.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "SIGNATURE",
-    rating: 4.9,
-    reviewsCount: 31,
     details: [
       "Fabric: Soft Textured Cotton Fabric",
       "Colour: Powder Blue",
@@ -145,8 +135,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted mini dress in cotton embroidery fabric, with white fabric, blue floral embroidery, a ruched bust and a gathered flared skirt.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
-    rating: 4.9,
-    reviewsCount: 27,
     details: [
       "Fabric: Cotton Embroidery Fabric",
       "Colour: White with Blue Floral Embroidery",
@@ -169,8 +157,6 @@ const PRODUCTS_DATA = [
     description: "Handcrafted cotton embroidery fabric skorts in white with blue floral embroidery and a floral embroidered finish.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
-    rating: 4.8,
-    reviewsCount: 18,
     details: [
       "Fabric: Cotton Embroidery Fabric",
       "Colour: White with Blue Floral Embroidery",
@@ -193,8 +179,6 @@ const PRODUCTS_DATA = [
     description: "Handcrafted pink and white cotton gingham shorts with an elasticated waist and pockets.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "SUMMER ESSENTIAL",
-    rating: 4.8,
-    reviewsCount: 15,
     details: [
       "Fabric: Cotton Gingham Fabric",
       "Colour: Pink & White",
@@ -217,8 +201,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted ivory white floral-print mini dress in cotton rayon, with a halter neckline, fitted bodice and gathered flared skirt.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
-    rating: 4.8,
-    reviewsCount: 18,
     details: [
       "Fabric: Cotton Rayon",
       "Colour: Ivory White with Floral Print",
@@ -242,8 +224,6 @@ const PRODUCTS_DATA = [
     description: "A handcrafted pink and white cotton gingham halter-neck romper with a ruched bodice, elasticated waist and flared shorts.",
     sizes: ["XS", "S", "M", "L", "XL"],
     badge: "NEW ARRIVAL",
-    rating: 4.8,
-    reviewsCount: 18,
     details: [
       "Fabric: Cotton Gingham Fabric",
       "Colour: Pink & White Checks",

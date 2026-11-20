@@ -98,7 +98,7 @@ async function serveStatic(req, res, pathname) {
 
   if (relativePath === '/') relativePath = '/index.html';
 
-  const filePath = path.resolve(DIST, `.${relativePath}`);
+  let filePath = path.resolve(DIST, `.${relativePath}`);
 
   if (!filePath.startsWith(DIST + path.sep)) {
     sendJson(res, 403, { error: 'Forbidden.' });
@@ -106,7 +106,11 @@ async function serveStatic(req, res, pathname) {
   }
 
   try {
-    const info = await stat(filePath);
+    let info = await stat(filePath);
+    if (info.isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+      info = await stat(filePath);
+    }
     if (!info.isFile()) {
       sendJson(res, 404, { error: 'Not found.' });
       return;

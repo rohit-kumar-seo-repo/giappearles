@@ -98,8 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initFeaturedCarousel();
   initLaunchOffer();
   initBrandMarquee();
+  initCategoryCounts();
   initCategoryFilters();
   initSearchAndFilters();
+  initProductCardActions();
   initMobileNavigation();
   initStorefrontLinks();
   initSizeModal();
@@ -192,6 +194,90 @@ function productPagePath(product) {
   return '/products/' + slug + '/';
 }
 
+function productImageUrl(image) {
+  return '/' + encodeURI(String(image || '').replace(/^\/+/, ''));
+}
+
+function productImageSrcset(image) {
+  const absoluteImage = productImageUrl(image);
+  return absoluteImage.replace(/\.jpg$/i, '-480.jpg') + ' 480w, '
+    + absoluteImage.replace(/\.jpg$/i, '-900.jpg') + ' 900w, '
+    + absoluteImage + ' 1600w';
+}
+
+function productDiscountPercent(product) {
+  const originalPrice = Number(product.displayPrice);
+  const salePrice = Number(product.launchPrice);
+  if (!originalPrice || salePrice >= originalPrice) return 0;
+  return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+}
+
+function productCardMeta(product) {
+  const color = product.details?.find((detail) => /^Colour:/i.test(detail))?.replace(/^Colour:\s*/i, '').trim();
+  return [color, product.categoryLabel].filter(Boolean).join(' · ');
+}
+
+function escapeProductCardText(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function productCardMarkup(product, featured = false) {
+  const primaryImage = productImageUrl(product.image);
+  const secondaryImage = product.secondaryImage ? productImageUrl(product.secondaryImage) : '';
+  const discount = productDiscountPercent(product);
+  const name = escapeProductCardText(product.name);
+  const meta = escapeProductCardText(productCardMeta(product));
+  const cardClass = featured ? 'product-card featured-product' : 'product-card';
+  const discountBadge = discount ? '<span class="product-card-discount">-' + discount + '%</span>' : '';
+  const secondaryPhoto = secondaryImage
+    ? '<img class="product-image product-image-secondary" src="' + secondaryImage + '" alt="" width="900" height="1200" loading="lazy" decoding="async" aria-hidden="true">'
+    : '';
+
+  return '<article class="' + cardClass + '" data-product-id="' + escapeProductCardText(product.id) + '">'
+    + '<a class="product-card-link" href="' + productPagePath(product) + '" aria-label="View ' + name + '">'
+    + '<div class="product-image-wrap">'
+    + '<img class="product-image product-image-primary" src="' + primaryImage + '" srcset="' + productImageSrcset(product.image) + '" sizes="(max-width: 767px) 46vw, (max-width: 1024px) 31vw, 23vw" alt="' + name + '" width="900" height="1200" loading="lazy" decoding="async">'
+    + secondaryPhoto
+    + discountBadge
+    + '</div>'
+    + '<div class="product-info">'
+    + '<h3 class="product-name">' + name + '</h3>'
+    + '<p class="product-card-meta">' + meta + '</p>'
+    + '<div class="product-price-row">'
+    + '<span class="launch-price">₹' + Number(product.launchPrice).toLocaleString('en-IN') + '</span>'
+    + '<s class="display-price">₹' + Number(product.displayPrice).toLocaleString('en-IN') + '</s>'
+    + (discount ? '<span class="discount-badge-pill">-' + discount + '%</span>' : '')
+    + '</div></div></a>'
+    + '<button class="product-card-add" type="button" data-open-size-choice="' + escapeProductCardText(product.id) + '" aria-label="Add ' + name + ' to bag">Add to bag</button>'
+    + '</article>';
+}
+
+function initCategoryCounts() {
+  document.querySelectorAll('[data-category-count]').forEach((count) => {
+    const category = count.dataset.categoryCount;
+    count.textContent = String(PRODUCTS_DATA.filter((product) => product.category === category).length);
+  });
+}
+
+function initProductCardActions() {
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-open-size-choice]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof window.openRelatedSizeChoice === 'function') {
+      window.openRelatedSizeChoice(button.dataset.openSizeChoice);
+    } else {
+      openQuickView(button.dataset.openSizeChoice);
+    }
+  });
+}
+
 function initFeaturedCarousel() {
   const rail = document.getElementById('featuredRail');
   const previousButton = document.getElementById('featuredEditPrev');
@@ -206,26 +292,7 @@ function initFeaturedCarousel() {
     return;
   }
 
-  rail.innerHTML = featuredProducts.map((product) => `
-    <article class="featured-product" data-featured-product="${product.id}">
-      <div class="featured-product-image-wrap">
-        <span class="featured-product-badge ${product.isBundle ? 'is-bundle' : ''}">${product.badge}</span>
-        <a class="featured-product-image-link" href="${productPagePath(product)}" aria-label="View ${product.name}">
-          <img src="${encodeURI(product.image)}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 78vw, (max-width: 1024px) 40vw, 23vw" alt="${product.name}" loading="lazy" decoding="async" />
-        </a>
-      </div>
-      <div class="featured-product-info">
-        <span class="featured-product-category">${product.categoryLabel}</span>
-        <h3>${product.name}</h3>
-        <div class="featured-product-prices">
-          <strong>₹${product.launchPrice.toLocaleString('en-IN')}</strong>
-          <s>₹${product.displayPrice.toLocaleString('en-IN')}</s>
-          <span>Save ₹${(product.displayPrice - product.launchPrice).toLocaleString('en-IN')}</span>
-        </div>
-        <a class="featured-product-link" href="${productPagePath(product)}" aria-label="View details for ${product.name}">View details <span aria-hidden="true">↗</span></a>
-      </div>
-    </article>
-  `).join('');
+  rail.innerHTML = featuredProducts.map((product) => productCardMarkup(product, true)).join('');
 
   const scrollRail = (direction) => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -565,30 +632,7 @@ function renderProducts() {
   }
 
   // 7. Render Product Cards Grid
-  DOM.productsGrid.innerHTML = list.map(product => `
-    <article class="product-card" data-product-id="${product.id}">
-      <div class="product-image-wrap">
-        <span class="badge-launch ${product.isBundle ? 'badge-bundle' : ''}">${product.badge}</span>
-        <a class="product-image-link" href="${productPagePath(product)}" aria-label="View ${product.name}">
-          <img src="${product.image}" srcset="${encodeURI(product.image.replace('.jpg', '-480.jpg'))} 480w, ${encodeURI(product.image)} 900w" sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="${product.name}" class="product-image" loading="lazy" decoding="async" />
-        </a>
-        <div class="quick-actions-overlay">
-          <a class="btn-quick-action" href="${productPagePath(product)}" aria-label="View details for ${product.name}">View Details</a>
-        </div>
-      </div>
-      
-      <div class="product-info">
-        <span class="product-category-tag">${product.categoryLabel}</span>
-        <h3 class="product-name"><a class="product-name-button" href="${productPagePath(product)}" aria-label="View details for ${product.name}">${product.name}</a></h3>
-        
-        <div class="product-price-row" style="margin-bottom: 0;">
-          <span class="launch-price">₹${product.launchPrice.toLocaleString()}</span>
-          <span class="display-price">₹${product.displayPrice.toLocaleString()}</span>
-          <span class="save-pill">SAVE ₹${product.savings}</span>
-        </div>
-      </div>
-    </article>
-  `).join('');
+  DOM.productsGrid.innerHTML = list.map((product) => productCardMarkup(product)).join('');
 }
 
 /**

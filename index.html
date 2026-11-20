@@ -32,9 +32,18 @@
 </head>
 <body class="storefront-page">
 
-  <div class="launch-offer-bar" aria-label="Current launch pricing">
-    <p><span class="launch-offer-label">Launch pricing</span><span>Save up to <strong id="launchOfferSavings">₹400</strong> on selected styles</span></p>
-    <a href="#catalog" data-shop-category="all">Explore the edit <span aria-hidden="true">↗</span></a>
+  <div class="launch-offer-bar" aria-label="Current offers and order details">
+    <p class="visually-hidden">Launch pricing: save up to ₹400 on selected styles. Made to order. ₹150 flat shipping.</p>
+    <div class="launch-offer-track" aria-hidden="true">
+      <div class="launch-offer-group">
+        <span>Launch pricing · Save up to <strong id="launchOfferSavings">₹400</strong></span><i>✦</i><span>Made to order</span><i>✦</i><span>₹150 flat shipping</span><i>✦</i>
+        <span>Launch pricing · Save up to ₹400</span><i>✦</i><span>Made to order</span><i>✦</i><span>₹150 flat shipping</span><i>✦</i>
+      </div>
+      <div class="launch-offer-group" aria-hidden="true">
+        <span>Launch pricing · Save up to ₹400</span><i>✦</i><span>Made to order</span><i>✦</i><span>₹150 flat shipping</span><i>✦</i>
+        <span>Launch pricing · Save up to ₹400</span><i>✦</i><span>Made to order</span><i>✦</i><span>₹150 flat shipping</span><i>✦</i>
+      </div>
+    </div>
   </div>
 
   <!-- ==========================================
@@ -52,11 +61,12 @@
       </button>
       <nav class="site-navigation" id="siteNavigation" aria-label="Main navigation">
         <ul class="nav-links">
-          <li><a href="#catalog" class="nav-link active" data-shop-category="all">Shop All</a></li>
+          <li><a href="#new-arrivals" class="nav-link">New in</a></li>
+          <li><a href="#catalog" class="nav-link active" data-shop-category="all">Shop all</a></li>
           <li><a href="#catalog" class="nav-link" data-shop-category="dresses">Dresses</a></li>
-          <li><a href="#catalog" class="nav-link" data-shop-category="coords">Co-ord Sets</a></li>
+          <li><a href="#catalog" class="nav-link" data-shop-category="coords">Co-ord sets</a></li>
           <li><a href="#catalog" class="nav-link" data-shop-category="tops">Tops</a></li>
-          <li><a href="#brand-story" class="nav-link">Our Story</a></li>
+          <li><a href="#catalog" class="nav-link" data-shop-category="bottoms">Bottoms</a></li>
           <li class="mobile-nav-account">
             <a href="login.html#sign-in">Sign In</a>
             <a href="login.html#register">Create Account</a>
@@ -102,71 +112,24 @@
        ========================================== -->
   <section class="hero-section" aria-labelledby="heroTitle">
     <div class="hero-image-panel">
-      <img src="assets/images/optimized/main photo.jpg" srcset="assets/images/optimized/main%20photo-800.jpg 800w, assets/images/optimized/main%20photo.jpg 1447w" sizes="(max-width: 767px) 100vw, 50vw" alt="Model wearing a white and blue embroidered GI Apparel dress" class="hero-image" width="1447" height="1087" fetchpriority="high" decoding="async" />
+      <img src="/assets/images/optimized/main photo.jpg" srcset="/assets/images/optimized/main%20photo-800.jpg 800w, /assets/images/optimized/main%20photo.jpg 1447w" sizes="(max-width: 767px) 100vw, 50vw" alt="Model wearing a white and blue embroidered GI Apparel dress" class="hero-image" width="1447" height="1087" fetchpriority="high" decoding="async" />
     </div>
 
-    <span class="hero-wordmark" aria-hidden="true">GI APPAREL</span>
     <div class="hero-headline">
       <p class="hero-eyebrow">Handcrafted · Made to order</p>
       <h1 id="heroTitle">Made for your <em>sunny days.</em></h1>
       <p class="hero-description">Thoughtful details, made for sunny days.</p>
       <div class="hero-actions">
-        <a href="#catalog" class="btn-primary" data-shop-category="all">SHOP THE EDIT</a>
-        <a href="#brand-story" class="btn-secondary">OUR APPROACH</a>
+        <a href="#catalog" class="btn-primary" data-shop-category="all">SHOP NOW</a>
       </div>
     </div>
   </section>
 
-  <div class="brand-marquee" aria-label="GI Apparel order details">
-    <p class="visually-hidden">Handcrafted pieces. Made to order. Dispatched in 10–12 working days. Flat ₹150 shipping.</p>
-    <div class="brand-marquee-viewport" aria-hidden="true">
-      <div class="brand-marquee-track" id="brandMarqueeTrack">
-        <div class="brand-marquee-group">
-          <span>Handcrafted pieces</span><i></i><span>Made to order</span><i></i><span>Dispatched in 10–12 working days</span><i></i><span>₹150 flat shipping</span><i></i>
-        </div>
-        <div class="brand-marquee-group">
-          <span>Handcrafted pieces</span><i></i><span>Made to order</span><i></i><span>Dispatched in 10–12 working days</span><i></i><span>₹150 flat shipping</span><i></i>
-        </div>
-      </div>
-    </div>
-    <button class="marquee-toggle" id="marqueeToggle" type="button" aria-label="Pause moving store details" aria-pressed="false">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
-    </button>
-  </div>
-
-  <section class="category-edit" id="shop-categories" aria-labelledby="categoryEditTitle">
-    <div class="category-edit-heading">
-      <div>
-        <p class="section-kicker">Find your next favourite</p>
-        <h2 id="categoryEditTitle">Shop by category</h2>
-      </div>
-      <a class="category-edit-all" href="#catalog" data-shop-category="all">Explore the full edit <span aria-hidden="true">↗</span></a>
-    </div>
-    <div class="category-grid">
-      <a class="category-card" href="#catalog" data-shop-category="dresses" aria-label="Shop dresses">
-        <img src="assets/images/optimized/alora midi.jpg" alt="Powder blue handcrafted midi dress" loading="lazy" decoding="async">
-        <span class="category-card-copy"><span class="category-card-name">Dresses</span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
-      </a>
-      <a class="category-card" href="#catalog" data-shop-category="coords" aria-label="Shop co-ord sets">
-        <img src="assets/images/optimized/1000065964.jpg" alt="Navy handcrafted co-ord set" loading="lazy" decoding="async">
-        <span class="category-card-copy"><span class="category-card-name">Co-ord sets</span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
-      </a>
-      <a class="category-card" href="#catalog" data-shop-category="tops" aria-label="Shop tops">
-        <img src="assets/images/optimized/rosie gingham top1.jpg" alt="Pink gingham handcrafted top" loading="lazy" decoding="async">
-        <span class="category-card-copy"><span class="category-card-name">Tops</span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
-      </a>
-      <a class="category-card" href="#catalog" data-shop-category="bottoms" aria-label="Shop skirts and shorts">
-        <img src="assets/images/optimized/azure mini skirt1.jpg" alt="White skirt with blue floral embroidery" loading="lazy" decoding="async">
-        <span class="category-card-copy"><span class="category-card-name">Skirts &amp; shorts</span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
-      </a>
-    </div>
-  </section>
-
-  <section class="featured-edit" aria-labelledby="featuredEditTitle">
+  <section class="featured-edit" id="new-arrivals" aria-labelledby="featuredEditTitle">
     <div class="featured-edit-heading">
       <div>
-        <h2 id="featuredEditTitle">The GI Edit</h2>
-        <p>A considered selection for the days ahead.</p>
+        <h2 id="featuredEditTitle">New arrivals</h2>
+        <p>Fresh pieces, thoughtfully made to order.</p>
       </div>
       <div class="featured-edit-controls" aria-label="Featured product carousel controls">
         <span class="featured-edit-count" id="featuredEditCount" aria-hidden="true">01 / 08</span>
@@ -180,6 +143,34 @@
     </div>
     <div class="featured-rail" id="featuredRail" role="region" aria-label="Featured GI Apparel pieces" tabindex="0"></div>
     <a class="featured-edit-all" href="#catalog" data-shop-category="all">View all pieces <span aria-hidden="true">↗</span></a>
+  </section>
+
+  <section class="category-edit" id="shop-categories" aria-labelledby="categoryEditTitle">
+    <div class="category-edit-heading">
+      <div>
+        <p class="section-kicker">Find your next favourite</p>
+        <h2 id="categoryEditTitle">Shop by category</h2>
+      </div>
+      <a class="category-edit-all" href="#catalog" data-shop-category="all">Explore the full edit <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="category-grid">
+      <a class="category-card" href="#catalog" data-shop-category="dresses" aria-label="Shop dresses">
+        <img src="/assets/images/optimized/alora midi.jpg" alt="Powder blue handcrafted midi dress" width="800" height="1067" loading="lazy" decoding="async">
+        <span class="category-card-copy"><span><span class="category-card-name">Dresses</span><span class="category-card-count"><span data-category-count="dresses">4</span> pieces</span></span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
+      </a>
+      <a class="category-card" href="#catalog" data-shop-category="coords" aria-label="Shop co-ord sets">
+        <img src="/assets/images/optimized/1000065964.jpg" alt="Navy handcrafted co-ord set" width="800" height="1067" loading="lazy" decoding="async">
+        <span class="category-card-copy"><span><span class="category-card-name">Co-ord sets</span><span class="category-card-count"><span data-category-count="coords">2</span> pieces</span></span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
+      </a>
+      <a class="category-card" href="#catalog" data-shop-category="tops" aria-label="Shop tops">
+        <img src="/assets/images/optimized/rosie gingham top1.jpg" alt="Pink gingham handcrafted top" width="800" height="1067" loading="lazy" decoding="async">
+        <span class="category-card-copy"><span><span class="category-card-name">Tops</span><span class="category-card-count"><span data-category-count="tops">2</span> pieces</span></span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
+      </a>
+      <a class="category-card" href="#catalog" data-shop-category="bottoms" aria-label="Shop skirts and shorts">
+        <img src="/assets/images/optimized/azure mini skirt1.jpg" alt="White skirt with blue floral embroidery" width="800" height="1067" loading="lazy" decoding="async">
+        <span class="category-card-copy"><span><span class="category-card-name">Skirts &amp; shorts</span><span class="category-card-count"><span data-category-count="bottoms">2</span> pieces</span></span><span class="category-card-link">Explore <span aria-hidden="true">↗</span></span></span>
+      </a>
+    </div>
   </section>
 
 
@@ -256,7 +247,7 @@
 
   <section class="brand-story" id="brand-story" aria-labelledby="brandStoryTitle">
     <div class="brand-story-image">
-      <img src="assets/images/optimized/gingham co-ord set1.jpg" alt="A pink gingham GI Apparel co-ord set, shown with its matching shorts" loading="lazy" decoding="async" />
+      <img src="/assets/images/optimized/gingham co-ord set1.jpg" alt="A pink gingham GI Apparel co-ord set, shown with its matching shorts" width="900" height="1200" loading="lazy" decoding="async" />
     </div>
     <div class="brand-story-copy">
       <h2 id="brandStoryTitle">Made with care.<br /><em>Worn with ease.</em></h2>

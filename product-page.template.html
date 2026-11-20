@@ -9,106 +9,125 @@
   <meta name="description" content="%%PRODUCT_DESCRIPTION%%">
   <link rel="canonical" href="%%PRODUCT_CANONICAL%%">
   <meta property="og:type" content="product">
+  <meta property="og:site_name" content="GI Apparel">
   <meta property="og:title" content="%%PRODUCT_NAME%% | GI Apparel">
   <meta property="og:description" content="%%PRODUCT_DESCRIPTION%%">
   <meta property="og:url" content="%%PRODUCT_CANONICAL%%">
   <meta property="og:image" content="https://giapparel.in/%%PRODUCT_IMAGE%%">
+  <meta property="og:image:alt" content="%%PRODUCT_NAME%%">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">%%PRODUCT_SCHEMA%%</script>
 </head>
-<body class="product-page">
-  <div class="product-promo"><span>Handcrafted for your everyday occasions</span><span>Made to order · Dispatched in 10–12 working days</span></div>
-  <header class="product-header">
-    <a class="product-brand" href="/" aria-label="GI Apparel home"><span>GI</span><small>APPAREL</small></a>
-    <nav class="product-nav" aria-label="Main navigation">
-      <a href="/#catalog">Shop all</a>
-      <a href="/#shop-categories">Collections</a>
-      <a href="/#brand-story">Our story</a>
-    </nav>
-    <a class="product-bag-link" href="/?openBag=1" aria-label="Open your shopping bag">Bag <span id="productBagCount">0</span></a>
-    <button class="product-menu-toggle" id="productMenuToggle" type="button" aria-expanded="false" aria-controls="productMobileMenu" aria-label="Open navigation">☰</button>
-  </header>
-  <nav class="product-mobile-menu" id="productMobileMenu" aria-label="Mobile navigation">
-    <a href="/#catalog">Shop all</a>
-    <a href="/#shop-categories">Collections</a>
-    <a href="/#brand-story">Our story</a>
-  </nav>
+<body class="storefront-page product-page">
+  %%SHARED_HEADER%%
 
-  <main>
-    <nav class="product-breadcrumb" aria-label="Breadcrumb">
-      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/#catalog">%%PRODUCT_CATEGORY%%</a><span aria-hidden="true">/</span><span aria-current="page">%%PRODUCT_NAME%%</span>
+  <main class="product-detail-main">
+    <nav class="product-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span>
+      <a href="/#catalog">%%PRODUCT_CATEGORY%%</a><span aria-hidden="true">/</span>
+      <span aria-current="page">%%PRODUCT_NAME%%</span>
     </nav>
+
     <section class="product-detail-layout" aria-labelledby="productTitle">
       <div class="product-gallery">
-        <div class="product-main-image-wrap">
-          <img id="productMainImage" class="product-main-image" src="%%PRODUCT_IMAGE%%" alt="%%PRODUCT_NAME%%" fetchpriority="high" decoding="async">
-          <span class="product-made-badge">Made to order</span>
+        <div class="product-gallery-thumbs" role="group" aria-label="Choose product image">%%PRODUCT_IMAGES%%</div>
+        <div class="product-main-media" id="productSwipeArea" aria-label="Product image gallery">
+          <span class="product-detail-badge">Made to order</span>
+          <div class="product-image-track" id="productImageTrack">%%PRODUCT_SLIDES%%</div>
         </div>
-        <div class="product-thumbnails" aria-label="Product images">%%PRODUCT_IMAGES%%</div>
       </div>
 
-      <div class="product-detail-copy">
-        <p class="product-kicker">%%PRODUCT_CATEGORY%% · GI Apparel</p>
+      <div class="product-purchase-panel">
+        <p class="product-detail-category">%%PRODUCT_CATEGORY%% · GI Apparel</p>
         <h1 id="productTitle">%%PRODUCT_NAME%%</h1>
-        <p class="product-review-line"><span aria-label="Rated 4.9 out of 5">★★★★★</span> <span>Hand-finished, made for you</span></p>
-        <p class="product-description">%%PRODUCT_DESCRIPTION%%</p>
-
-        <div class="product-price-block">
+        <div class="product-detail-price-row">
           <strong>₹%%PRODUCT_PRICE%%</strong>
           <s>₹%%PRODUCT_DISPLAY_PRICE%%</s>
-          <span>Save ₹%%PRODUCT_SAVINGS%%</span>
+          <span class="product-detail-saving">-%%PRODUCT_DISCOUNT%%%</span>
         </div>
-        <p class="product-order-note"><span aria-hidden="true">✦</span> Made to order · dispatched in 10–12 working days</p>
+        <p class="product-detail-copy">%%PRODUCT_DESCRIPTION%%</p>
+        <p class="product-detail-made">Handcrafted to order · dispatched in 10–12 working days</p>
 
-        <fieldset class="product-size-picker">
-          <legend><span>Select your size</span><a href="#size-guide">Size guide</a></legend>
-          <div class="product-size-options">%%PRODUCT_SIZES%%</div>
-          <p class="product-size-error" id="productSizeError" role="status" aria-live="polite"></p>
-        </fieldset>
-
-        <button class="product-add-button" id="productAddButton" type="button">Add to bag <span aria-hidden="true">·</span> ₹%%PRODUCT_PRICE%%</button>
+        <div class="product-size-heading">
+          <span>Select your size</span>
+          <a href="#size-guide">View size guide</a>
+        </div>
+        <div class="product-size-options" id="productSizeOptions" role="group" aria-label="Choose a size">%%PRODUCT_SIZES%%</div>
+        <p class="product-size-status" id="productSizeStatus" role="status" aria-live="polite"></p>
+        <button class="product-add-button" id="productAddButton" type="button" data-product-add>
+          Add to bag · ₹%%PRODUCT_PRICE%%
+        </button>
         <a class="product-view-bag" id="productViewBag" href="/?openBag=1" hidden>Added to your bag · View bag ↗</a>
-        <p class="product-shipping-note">₹150 flat shipping · final total shown at checkout</p>
-        <div class="product-trust-row">
-          <span><i aria-hidden="true">✦</i> Handcrafted</span>
-          <span><i aria-hidden="true">✦</i> Made to order</span>
-          <span><i aria-hidden="true">✦</i> Thoughtful details</span>
+        <p class="product-size-status product-add-status" id="productAddStatus" role="status" aria-live="polite"></p>
+
+        <div class="product-detail-promises">
+          <p><span aria-hidden="true">✦</span> ₹150 flat shipping · shown at checkout</p>
+          <p><span aria-hidden="true">✦</span> Made to order with thoughtful details</p>
+          <a href="https://wa.me/919536429777?text=Hi%20GI%20Apparel%2C%20I%20need%20help%20choosing%20a%20size." target="_blank" rel="noopener noreferrer">Need sizing help? Message us on WhatsApp</a>
         </div>
 
         <div class="product-information">
           <details open>
-            <summary>About this piece</summary>
+            <summary>Description</summary>
             <p>%%PRODUCT_DESCRIPTION%%</p>
           </details>
           <details>
             <summary>Details &amp; care</summary>
-            <ul class="product-detail-list">%%PRODUCT_DETAILS%%</ul>
+            <ul>%%PRODUCT_DETAILS%%</ul>
           </details>
           <details id="size-guide">
-            <summary>Finding your fit</summary>
-            <p>Choose the size you usually wear. If you need a little help, <a href="https://wa.me/919536429777?text=Hi%20GI%20Apparel%2C%20I%20need%20help%20choosing%20a%20size." rel="noopener noreferrer">message us on WhatsApp</a> and we’ll help you find your fit.</p>
+            <summary>Size guide &amp; fit</summary>
+            <p>Available in XS, S, M, L and XL. For fit advice or measurements, <a href="https://wa.me/919536429777?text=Hi%20GI%20Apparel%2C%20could%20you%20help%20me%20with%20the%20size%20guide%20for%20%%PRODUCT_NAME_ENCODED%%3F" target="_blank" rel="noopener noreferrer">message us on WhatsApp</a>.</p>
           </details>
           <details>
-            <summary>Shipping &amp; returns</summary>
-            <p>This piece is made to order and is dispatched in 10–12 working days. A flat ₹150 shipping charge is shown in checkout. Please see our <a href="/#policy-summary">store policies</a> for more information.</p>
+            <summary>Shipping &amp; exchange</summary>
+            <p>This piece is made to order and dispatched in 10–12 working days. A flat ₹150 shipping charge is shown at checkout. Please review the <a href="#returnPolicyModal" class="trigger-return-policy">exchange terms</a> before ordering.</p>
           </details>
         </div>
       </div>
     </section>
 
-    <section class="product-related-section" aria-labelledby="relatedTitle">
-      <div class="product-related-heading"><p class="product-kicker">Keep exploring</p><h2 id="relatedTitle">You may also love</h2></div>
-      <div class="product-related-grid">%%RELATED_PRODUCTS%%</div>
+    <section class="related-products" aria-labelledby="relatedProductsTitle">
+      <div class="related-products-heading">
+        <div><p class="section-kicker">Keep exploring</p><h2 id="relatedProductsTitle">You may also like</h2></div>
+        <div class="related-carousel-controls" aria-label="Related product controls">
+          <button type="button" id="relatedPrevious" aria-label="Previous products">‹</button>
+          <button type="button" id="relatedNext" aria-label="Next products">›</button>
+        </div>
+      </div>
+      <div class="related-products-grid" id="relatedProducts">%%RELATED_PRODUCTS%%</div>
     </section>
   </main>
-  <footer class="product-footer">
-    <a class="product-footer-brand" href="/">GI <span>APPAREL</span></a>
-    <p>Thoughtful details, handcrafted for sunny days.</p>
-    <div class="product-footer-links"><a href="/#policy-summary">Policies</a><a href="mailto:hello@giapparel.in">Contact</a><a href="/#brand-story">Our story</a></div>
-    <small>© <span id="productYear"></span> GI Apparel · <a href="https://rohitkumarseo.com" rel="nofollow sponsored noopener noreferrer">Designed and managed by Rohit Kumar SEO</a></small>
-  </footer>
-  <script>window.GI_PRODUCT = %%PRODUCT_JSON%%;</script>
+
+  <div class="product-mobile-sticky" id="productMobileSticky">
+    <span>₹%%PRODUCT_PRICE%%</span>
+    <button class="product-add-button" id="productStickyAddButton" type="button" data-product-add>Add to bag</button>
+  </div>
+
+  <div class="product-size-modal-backdrop" id="relatedSizeModal" hidden>
+    <section class="product-size-modal" role="dialog" aria-modal="true" aria-labelledby="relatedSizeTitle">
+      <button class="product-size-modal-close" type="button" id="relatedSizeClose" aria-label="Close size picker">×</button>
+      <p class="product-detail-category" id="relatedSizeCategory">GI Apparel</p>
+      <h2 id="relatedSizeTitle">Choose a size</h2>
+      <div class="product-size-options" id="relatedSizeOptions" role="group" aria-label="Choose a size"></div>
+      <p class="product-size-status" id="relatedSizeStatus" role="status" aria-live="polite"></p>
+      <button class="product-add-button" id="relatedSizeAdd" type="button" disabled>Add to bag</button>
+    </section>
+  </div>
+
+  %%SHARED_POLICY_MODALS%%
+
+  %%SHARED_FOOTER%%
+
+  <script src="/data.js"></script>
+  <script src="/app.js"></script>
+  <script src="/supabase.js"></script>
+  <script type="module" src="/storefront-auth.js"></script>
+  <script>window.GI_PRODUCT = %%PRODUCT_JSON%%; window.GI_PRODUCT_CATALOG = %%PRODUCT_CATALOG_JSON%%;</script>
   <script src="/product.js" defer></script>
 </body>
 </html>
