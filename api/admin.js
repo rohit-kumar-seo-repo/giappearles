@@ -51,7 +51,6 @@ export default async function handler(request, response) {
     if (paymentStatus !== undefined) {
       if (!PAYMENT_STATUSES.includes(paymentStatus)) return fail(response, 400, 'Invalid payment status.');
       patch.payment_status = paymentStatus;
-      if (paymentStatus === 'paid') patch.paid_at = new Date().toISOString();
     }
     if (!Object.keys(patch).length) return fail(response, 400, 'Nothing to update.');
 
@@ -61,6 +60,15 @@ export default async function handler(request, response) {
       body: JSON.stringify(patch)
     });
     if (!updated?.length) return fail(response, 404, 'Order not found.');
+    // Record when an order was first marked paid, without overwriting the
+    // original payment time when an already-paid order is saved again.
+    if (paymentStatus === 'paid') {
+      await supabaseRequest(`orders?id=eq.${encodeURIComponent(id)}&paid_at=is.null`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paid_at: new Date().toISOString() })
+      });
+    }
     return response.status(200).json({ order: updated[0] });
   } catch (error) {
     console.error('Admin API request failed', { error: error.message });
