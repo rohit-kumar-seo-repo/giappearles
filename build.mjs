@@ -149,7 +149,8 @@ await cp(
 
 // Fail the build if a page or stylesheet points at an image that is not deployed.
 for (const file of ['index.html', 'login.html', 'styles.css', 'data.js', 'app.js', ...productPageFiles]) {
-  const source = await readFile(path.join(projectRoot, file), 'utf8');
+  const sourcePath = productPageFiles.includes(file) ? path.join(outputDirectory, file) : path.join(projectRoot, file);
+  const source = await readFile(sourcePath, 'utf8');
   for (const [reference] of source.matchAll(/assets\/images\/[^"'`()\n,]+?\.(?:jpe?g|png|webp|svg)/g)) {
     const relative = decodeURIComponent(reference);
     try {
