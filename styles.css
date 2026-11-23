@@ -3383,6 +3383,8 @@ body.storefront-page .nav-link.active { background: #f5ecee; color: #6b1f2d; }
 body.storefront-page .header-actions { justify-self: end; gap: 0.45rem; }
 body.storefront-page .header-actions .action-btn { width: 42px; height: 42px; color: #3b1822; }
 body.storefront-page .header-actions .action-btn svg { width: 20px; height: 20px; }
+body.storefront-page .header-actions .cart-header-trigger,
+body.storefront-page .header-actions .cart-header-trigger:hover { color: #fff; }
 body.storefront-page .header-account-signed-out { gap: 0.6rem; }
 body.storefront-page .header-account-signed-out .account-header-link { font-size: 0.82rem; }
 body.storefront-page .cart-count-badge { top: 2px; right: 1px; min-width: 17px; min-height: 17px; font-size: 0.68rem; }
