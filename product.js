@@ -12,12 +12,17 @@
   const sizeStatus = document.getElementById('productSizeStatus');
   const viewBag = document.getElementById('productViewBag');
   const relatedModal = document.getElementById('relatedSizeModal');
+  const sizeGuide = document.getElementById('size-guide');
   const relatedOptions = document.getElementById('relatedSizeOptions');
   const relatedStatus = document.getElementById('relatedSizeStatus');
   const relatedAddButton = document.getElementById('relatedSizeAdd');
   const relatedCloseButton = document.getElementById('relatedSizeClose');
   let activeRelatedProduct = null;
   let scrollFrame = 0;
+
+  document.querySelector('.product-size-heading a[href="#size-guide"]')?.addEventListener('click', () => {
+    if (sizeGuide) sizeGuide.open = true;
+  });
 
   const updateGallerySelection = (index, scrollMobile = false) => {
     const safeIndex = Math.max(0, Math.min(index, slides.length - 1));
