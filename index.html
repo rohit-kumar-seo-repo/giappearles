@@ -655,7 +655,17 @@
 
               <div class="checkout-summary-column checkout-price-summary" aria-live="polite">
                 <h4>Order total</h4>
+                <div class="checkout-coupon">
+                  <label class="form-label" for="checkoutCouponCode">Have a coupon?</label>
+                  <div class="coupon-input-group">
+                    <input class="form-input" id="checkoutCouponCode" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="32" placeholder="Enter code" aria-describedby="checkoutCouponStatus">
+                    <button class="btn-apply-coupon" id="checkoutCouponApply" type="button">Apply</button>
+                    <button class="btn-apply-coupon" id="checkoutCouponRemove" type="button" hidden>Remove</button>
+                  </div>
+                  <p class="coupon-msg" id="checkoutCouponStatus" role="status" aria-live="polite"></p>
+                </div>
                 <div class="breakdown-row"><span>Items</span><span id="checkoutItemsTotal">Calculating…</span></div>
+                <div class="breakdown-row coupon-savings" id="checkoutDiscountRow" hidden><span id="checkoutDiscountLabel">Coupon discount</span><span id="checkoutDiscountTotal">—</span></div>
                 <div class="breakdown-row"><span>Flat shipping</span><span id="checkoutShippingTotal">—</span></div>
                 <div class="breakdown-row total-row"><span>Total</span><span id="checkoutGrandTotal">—</span></div>
                 <p>Prices and totals are recalculated by the server. Orders are made only after a successful response.</p>

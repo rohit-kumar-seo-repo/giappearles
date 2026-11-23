@@ -442,6 +442,48 @@
       .mobile-brand .brand-apparel { font-size: 9px; }
       .mobile-nav .nav-button { font-size: 12px; }
     }
+    .coupon-metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .coupon-page-grid { display: grid; grid-template-columns: minmax(280px,.8fr) minmax(0,1.2fr); gap: 15px; align-items: start; }
+    .coupon-editor, .coupon-list-panel { min-width: 0; padding: 19px; }
+    .coupon-form { display: grid; gap: 13px; }
+    .coupon-form-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .coupon-field { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .coupon-field input, .coupon-field select { width: 100%; min-width: 0; min-height: 42px; padding: 0 11px; border: 1px solid var(--border); border-radius: 9px; background: #fffdfa; color: var(--ink); font: 500 14px var(--sans); }
+    .coupon-field input:focus, .coupon-field select:focus { outline: 2px solid rgba(107,31,45,.2); border-color: var(--maroon); }
+    .coupon-active-field { display: flex; align-items: center; gap: 9px; color: var(--text); font-size: 13px; font-weight: 600; }
+    .coupon-active-field input { width: 17px; height: 17px; accent-color: var(--maroon); }
+    .coupon-form-note { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .coupon-form-actions { display: flex; gap: 9px; }
+    .coupon-form-actions button { min-height: 42px; }
+    .coupon-list { display: grid; gap: 10px; }
+    .coupon-loading { padding: 25px 12px; color: var(--muted); text-align: center; font-size: 13px; }
+    .coupon-card { display: grid; gap: 13px; padding: 15px; border: 1px solid var(--border); border-radius: 13px; background: #fffdfa; }
+    .coupon-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .coupon-card-code { margin: 0; color: var(--maroon); font: 700 14px var(--sans); letter-spacing: .09em; }
+    .coupon-card-title { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .coupon-card-discount { color: var(--ink); font: 600 19px var(--sans); white-space: nowrap; }
+    .coupon-card-rules { display: flex; flex-wrap: wrap; gap: 6px; }
+    .coupon-rule { padding: 5px 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: 11px; }
+    .coupon-card-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding-top: 11px; border-top: 1px solid var(--border); }
+    .coupon-card-stat { display: grid; gap: 4px; color: var(--muted); font-size: 11px; }
+    .coupon-card-stat strong { color: var(--text); font-size: 14px; font-weight: 600; }
+    .coupon-card-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .coupon-status { padding: 5px 8px; border-radius: 999px; background: #eee9e5; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .coupon-status.is-active { background: #e7eee8; color: var(--green); }
+    .coupon-action-group { display: flex; gap: 7px; }
+    .coupon-action-group button { min-height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--text); font: 600 12px var(--sans); }
+    .coupon-action-group button:hover { border-color: var(--maroon); color: var(--maroon); }
+    @media (max-width: 980px) { .coupon-page-grid { grid-template-columns: minmax(0,1fr); } }
+    @media (max-width: 640px) {
+      .mobile-nav { grid-template-columns: repeat(4,minmax(0,1fr)); padding-right: 8px; padding-left: 8px; }
+      .coupon-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .coupon-editor, .coupon-list-panel { padding: 14px; }
+      .coupon-form-row { gap: 8px; }
+      .coupon-card { padding: 13px; }
+      .coupon-card-stats { gap: 5px; }
+      .coupon-card-stat strong { font-size: 12px; }
+      .coupon-action-group { gap: 5px; }
+    }
   </style>
 </head>
 <body>
@@ -483,6 +525,9 @@
         </button>
         <button class="nav-button" type="button" data-view="customers">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.7 19c.5-3.1 2.5-4.7 5.3-4.7s4.8 1.6 5.3 4.7M16 5.2a3.1 3.1 0 0 1 0 5.8M16.5 14.5c2.1.4 3.4 1.9 3.8 4.5"></path></svg></span>Customers
+        </button>
+        <button class="nav-button" type="button" data-view="coupons">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z"></path><path d="M13 8.5 10 15.5M10 9h.01M13 15h.01"></path></svg></span>Coupons
         </button>
       </nav>
       <div class="sidebar-spacer"></div>
@@ -631,6 +676,49 @@
             <div id="customer-cards" class="customer-cards"></div>
           </div>
         </section>
+
+        <section id="page-coupons" class="page" aria-labelledby="coupons-heading" hidden>
+          <div class="page-heading">
+            <div><p class="eyebrow">Thoughtful offers, on your terms</p><h1 id="coupons-heading" tabindex="-1">Coupons</h1><p class="page-description">Create a code, set its conditions and follow how it performs.</p></div>
+            <button id="coupon-new" class="primary-button" type="button">Create coupon</button>
+          </div>
+          <div class="metric-grid coupon-metrics" aria-live="polite">
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Active offers</p><span class="metric-glyph" aria-hidden="true">✳</span></div><strong id="coupon-active-count" class="metric-value">—</strong><p class="metric-note">Available to shoppers</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Orders using a code</p><span class="metric-glyph" aria-hidden="true">↗</span></div><strong id="coupon-usage-count" class="metric-value">—</strong><p class="metric-note">Accepted orders, less cancellations</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Paid orders</p><span class="metric-glyph" aria-hidden="true">₹</span></div><strong id="coupon-paid-count" class="metric-value">—</strong><p class="metric-note">Completed coupon purchases</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Discount given</p><span class="metric-glyph" aria-hidden="true">−</span></div><strong id="coupon-discount-total" class="metric-value">—</strong><p class="metric-note">On paid coupon orders</p></article>
+          </div>
+          <div class="coupon-page-grid">
+            <section id="coupon-editor" class="panel coupon-editor" aria-labelledby="coupon-form-heading" hidden>
+              <div class="panel-head"><div><h2 id="coupon-form-heading" class="panel-title">Create a coupon</h2><p class="panel-note">Discounts apply to items before shipping.</p></div></div>
+              <form id="coupon-form" class="coupon-form">
+                <label class="coupon-field"><span>Coupon code</span><input id="coupon-code" name="code" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_\-]{3,32}" autocomplete="off" placeholder="WELCOME10"></label>
+                <label class="coupon-field"><span>Offer name</span><input id="coupon-title" name="title" required minlength="2" maxlength="80" placeholder="Welcome offer"></label>
+                <div class="coupon-form-row">
+                  <label class="coupon-field"><span>Discount type</span><select id="coupon-type" name="discount_type"><option value="percentage">Percentage</option><option value="fixed">Fixed amount</option></select></label>
+                  <label class="coupon-field"><span id="coupon-value-label">Discount (%)</span><input id="coupon-value" name="discount_value" type="number" min="1" max="100" step="1" required value="10"></label>
+                </div>
+                <label class="coupon-field"><span>Minimum items total (₹)</span><input id="coupon-minimum" name="minimum_subtotal_rupees" type="number" min="0" max="99999999" step="0.01" value="0" required></label>
+                <label class="coupon-field"><span>Maximum discount (₹, optional)</span><input id="coupon-maximum" name="maximum_discount_rupees" type="number" min="0.01" max="99999999" step="0.01" placeholder="No cap"></label>
+                <div class="coupon-form-row">
+                  <label class="coupon-field"><span>Starts (optional, India time)</span><input id="coupon-starts" name="starts_at" type="datetime-local"></label>
+                  <label class="coupon-field"><span>Expires (optional, India time)</span><input id="coupon-expires" name="expires_at" type="datetime-local"></label>
+                </div>
+                <label class="coupon-field"><span>Maximum uses (optional)</span><input id="coupon-usage-limit" name="usage_limit" type="number" min="1" max="1000000" step="1" placeholder="Unlimited"></label>
+                <label class="coupon-active-field"><input id="coupon-active" name="active" type="checkbox" checked><span>Coupon is active</span></label>
+                <p class="coupon-form-note">Minimum spend, date window and usage cap are checked again by the server when an order is placed. Category-specific rules are not available in the current product catalogue.</p>
+                <p id="coupon-form-error" class="login-error" role="alert" aria-live="polite"></p>
+                <div class="coupon-form-actions"><button id="coupon-save" class="primary-button" type="submit">Save coupon</button><button id="coupon-cancel" class="subtle-button" type="button">Cancel</button></div>
+              </form>
+            </section>
+            <section class="panel coupon-list-panel" aria-labelledby="coupon-list-heading">
+              <div class="panel-head"><div><h2 id="coupon-list-heading" class="panel-title">Your offers</h2><p id="coupon-list-note" class="panel-note">Usage limits count accepted orders and free up when an order is cancelled or payment fails.</p></div><button id="coupon-refresh" class="subtle-button" type="button">Refresh</button></div>
+              <div id="coupon-list-loading" class="coupon-loading" role="status" hidden>Loading coupons…</div>
+              <div id="coupon-list-empty" class="empty-state" hidden></div>
+              <div id="coupon-list" class="coupon-list"></div>
+            </section>
+          </div>
+        </section>
       </div>
     </main>
 
@@ -638,6 +726,7 @@
       <button class="nav-button" type="button" data-view="overview" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"></rect></svg></span>Overview</button>
       <button class="nav-button" type="button" data-view="orders"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg></span>Orders</button>
       <button class="nav-button" type="button" data-view="customers"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.7 19c.5-3.1 2.5-4.7 5.3-4.7s4.8 1.6 5.3 4.7M16 5.2a3.1 3.1 0 0 1 0 5.8M16.5 14.5c2.1.4 3.4 1.9 3.8 4.5"></path></svg></span>Customers</button>
+      <button class="nav-button" type="button" data-view="coupons"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z"></path><path d="M13 8.5 10 15.5M10 9h.01M13 15h.01"></path></svg></span>Coupons</button>
     </nav>
   </div>
 
@@ -685,16 +774,16 @@
       ['processing', 'Processing'], ['shipped', 'Shipped'], ['delivered', 'Delivered'], ['cancelled', 'Cancelled']
     ];
     const state = {
-      orders: [], currentView: 'overview', statusFilter: 'all', dateFilter: 'all',
+      orders: [], coupons: [], editingCouponId: null, currentView: 'overview', statusFilter: 'all', dateFilter: 'all',
       search: '', sortBy: 'created_at', sortDirection: 'desc', activeOrderId: null,
-      lastUpdated: null, toastTimer: null, closeAfterPrint: null
+      lastUpdated: null, toastTimer: null, closeAfterPrint: null, couponRequestId: 0
     };
     const ui = {
       loginScreen: $('#login-screen'), loginForm: $('#login-form'), password: $('#admin-password'),
       togglePassword: $('#toggle-password'), loginError: $('#login-error'), loginSubmit: $('#login-submit'),
       loginSubmitLabel: $('#login-submit-label'), app: $('#app-shell'), updated: $('#updated-label'),
       topbarTitle: $('#topbar-title'), topbarSubtitle: $('#topbar-subtitle'),
-      overviewPage: $('#page-overview'), ordersPage: $('#page-orders'), customersPage: $('#page-customers'),
+      overviewPage: $('#page-overview'), ordersPage: $('#page-orders'), customersPage: $('#page-customers'), couponsPage: $('#page-coupons'),
       overviewLoading: $('#overview-loading'), overviewContent: $('#overview-content'),
       trendChart: $('#trend-chart'), donut: $('#status-donut'), statusLegend: $('#status-legend'),
       products: $('#top-products'), attention: $('#attention-list'), recent: $('#recent-table-body'),
@@ -702,6 +791,14 @@
       orderBody: $('#orders-table-body'), mobileOrderList: $('#mobile-order-list'), ordersEmpty: $('#orders-empty'),
       orderCount: $('#orders-result-count'), customersBody: $('#customers-table-body'),
       customerCards: $('#customer-cards'), customersEmpty: $('#customers-empty'), customersCount: $('#customers-result-count'),
+      couponEditor: $('#coupon-editor'), couponForm: $('#coupon-form'), couponFormHeading: $('#coupon-form-heading'),
+      couponCode: $('#coupon-code'), couponTitle: $('#coupon-title'), couponType: $('#coupon-type'),
+      couponValue: $('#coupon-value'), couponValueLabel: $('#coupon-value-label'), couponMinimum: $('#coupon-minimum'),
+      couponMaximum: $('#coupon-maximum'), couponStarts: $('#coupon-starts'), couponExpires: $('#coupon-expires'),
+      couponUsageLimit: $('#coupon-usage-limit'), couponActive: $('#coupon-active'), couponFormError: $('#coupon-form-error'),
+      couponSave: $('#coupon-save'), couponList: $('#coupon-list'), couponListLoading: $('#coupon-list-loading'),
+      couponListEmpty: $('#coupon-list-empty'), couponActiveCount: $('#coupon-active-count'),
+      couponUsageCount: $('#coupon-usage-count'), couponPaidCount: $('#coupon-paid-count'), couponDiscountTotal: $('#coupon-discount-total'),
       drawer: $('#order-drawer'), backdrop: $('#drawer-backdrop'), toast: $('#toast'), printArea: $('#print-area')
     };
     const moneyFormatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 });
@@ -794,15 +891,17 @@
       ui.togglePassword.disabled = busy;
     }
     function setPage(view) {
-      const known = ['overview', 'orders', 'customers'];
+      const known = ['overview', 'orders', 'customers', 'coupons'];
       state.currentView = known.includes(view) ? view : 'overview';
       ui.overviewPage.hidden = state.currentView !== 'overview';
       ui.ordersPage.hidden = state.currentView !== 'orders';
       ui.customersPage.hidden = state.currentView !== 'customers';
+      ui.couponsPage.hidden = state.currentView !== 'coupons';
       const config = {
         overview: ['Overview', 'A clear view of what is happening in your store.'],
         orders: ['Orders', 'Manage each order with care.'],
-        customers: ['Customers', 'A warm view of the people behind the orders.']
+        customers: ['Customers', 'A warm view of the people behind the orders.'],
+        coupons: ['Coupons', 'Thoughtful offers, with clear rules and results.']
       };
       ui.topbarTitle.textContent = config[state.currentView][0];
       ui.topbarSubtitle.textContent = config[state.currentView][1];
@@ -812,6 +911,7 @@
       });
       if (state.currentView === 'orders') renderOrders();
       if (state.currentView === 'customers') renderCustomers();
+      if (state.currentView === 'coupons') refreshCoupons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     async function requestOrders(password) {
@@ -1113,6 +1213,11 @@
         line.append(make('span', '', label), make('span', '', money(amount)));
         totals.append(line);
       });
+      if (number(order.discount_paise) > 0) {
+        const discount = make('div', 'total-row');
+        discount.append(make('span', '', 'Coupon' + (order.coupon_code ? ' · ' + order.coupon_code : '')), make('span', '', '−' + money(order.discount_paise)));
+        totals.append(discount);
+      }
       const grand = make('div', 'total-row grand');
       grand.append(make('span', '', 'Order total'), make('span', '', money(order.total_paise)));
       totals.append(grand);
@@ -1635,6 +1740,205 @@
         ui.customerCards.append(card);
       });
     }
+    function couponLocalDate(value) {
+      if (!value) return '';
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(new Date(value));
+      const part = key => parts.find(item => item.type === key)?.value || '';
+      return `${part('year')}-${part('month')}-${part('day')}T${part('hour')}:${part('minute')}`;
+    }
+    function couponStatus(coupon) {
+      if (!coupon.active) return ['Paused', false];
+      if (coupon.starts_at && new Date(coupon.starts_at) > new Date()) return ['Scheduled', false];
+      if (coupon.expires_at && new Date(coupon.expires_at) <= new Date()) return ['Expired', false];
+      if (coupon.usage_limit && number(coupon.stats?.usage_count) >= number(coupon.usage_limit)) return ['Limit reached', false];
+      return ['Live', true];
+    }
+    function renderCoupons() {
+      const totals = state.coupons.reduce((result, coupon) => {
+        result.active += couponStatus(coupon)[1] ? 1 : 0;
+        result.uses += number(coupon.stats?.usage_count);
+        result.paid += number(coupon.stats?.paid_order_count);
+        result.discount += number(coupon.stats?.discount_total_paise);
+        return result;
+      }, { active: 0, uses: 0, paid: 0, discount: 0 });
+      ui.couponActiveCount.textContent = String(totals.active);
+      ui.couponUsageCount.textContent = String(totals.uses);
+      ui.couponPaidCount.textContent = String(totals.paid);
+      ui.couponDiscountTotal.textContent = money(totals.discount);
+      ui.couponList.replaceChildren();
+      ui.couponListEmpty.hidden = state.coupons.length > 0;
+      ui.couponListEmpty.replaceChildren();
+      if (!state.coupons.length) {
+        ui.couponListEmpty.append(make('span', 'empty-mark', 'GI'), make('p', 'empty-title', 'Your first offer starts here'), make('p', 'empty-copy', 'Create a code to welcome new customers or reward a seasonal purchase.'));
+      }
+
+      state.coupons.forEach(coupon => {
+        const stats = coupon.stats || {};
+        const card = make('article', 'coupon-card');
+        const head = make('div', 'coupon-card-head');
+        const identity = make('div');
+        identity.append(make('p', 'coupon-card-code', coupon.code), make('p', 'coupon-card-title', coupon.title));
+        const discount = coupon.discount_type === 'percentage'
+          ? `${number(coupon.discount_value)}% off`
+          : `${money(coupon.discount_value)} off`;
+        head.append(identity, make('strong', 'coupon-card-discount', discount));
+        const rules = make('div', 'coupon-card-rules');
+        if (number(coupon.minimum_subtotal_paise) > 0) rules.append(make('span', 'coupon-rule', 'Min. ' + money(coupon.minimum_subtotal_paise)));
+        if (number(coupon.maximum_discount_paise) > 0) rules.append(make('span', 'coupon-rule', 'Max discount ' + money(coupon.maximum_discount_paise)));
+        if (coupon.starts_at) rules.append(make('span', 'coupon-rule', 'From ' + orderDate(coupon.starts_at)));
+        if (coupon.expires_at) rules.append(make('span', 'coupon-rule', 'Until ' + orderDate(coupon.expires_at)));
+        rules.append(make('span', 'coupon-rule', coupon.usage_limit ? `${number(stats.usage_count)}/${number(coupon.usage_limit)} uses` : 'Unlimited uses'));
+        const metrics = make('div', 'coupon-card-stats');
+        [
+          ['Paid orders', String(number(stats.paid_order_count))],
+          ['Discount given', money(stats.discount_total_paise)],
+          ['Paid revenue', money(stats.paid_revenue_paise)]
+        ].forEach(([label, value]) => {
+          const metric = make('div', 'coupon-card-stat');
+          metric.append(make('span', '', label), make('strong', '', value));
+          metrics.append(metric);
+        });
+        const footer = make('div', 'coupon-card-actions');
+        const [status, live] = couponStatus(coupon);
+        footer.append(make('span', 'coupon-status' + (live ? ' is-active' : ''), status));
+        const actions = make('div', 'coupon-action-group');
+        const edit = make('button', '', 'Edit');
+        edit.type = 'button';
+        edit.addEventListener('click', () => openCouponEditor(coupon));
+        const toggle = make('button', '', coupon.active ? 'Pause' : 'Activate');
+        toggle.type = 'button';
+        toggle.addEventListener('click', () => toggleCoupon(coupon));
+        actions.append(edit, toggle);
+        footer.append(actions);
+        card.append(head, rules, metrics, footer);
+        ui.couponList.append(card);
+      });
+    }
+    async function refreshCoupons() {
+      const requestId = (state.couponRequestId || 0) + 1;
+      state.couponRequestId = requestId;
+      const password = sessionStorage.getItem(STORAGE_KEY);
+      if (!password) return signOut('');
+      ui.couponListLoading.hidden = false;
+      ui.couponListEmpty.hidden = true;
+      try {
+        const response = await fetch('/api/admin/coupons', {
+          method: 'GET', cache: 'no-store', headers: { 'X-Admin-Password': password, Accept: 'application/json' }
+        });
+        if (response.status === 401) {
+          signOut('Your session has expired. Enter your password again.');
+          return;
+        }
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !Array.isArray(payload.coupons)) throw new Error(payload.error || 'Coupons could not be loaded.');
+        if (requestId !== state.couponRequestId) return;
+        state.coupons = payload.coupons;
+        renderCoupons();
+      } catch (error) {
+        if (requestId === state.couponRequestId) {
+          ui.couponList.replaceChildren();
+          ui.couponListEmpty.hidden = false;
+          ui.couponListEmpty.replaceChildren(make('p', 'empty-copy', error.message || 'Coupons could not be loaded.'));
+        }
+      } finally {
+        if (requestId === state.couponRequestId) ui.couponListLoading.hidden = true;
+      }
+    }
+    function openCouponEditor(coupon) {
+      state.editingCouponId = coupon?.id || null;
+      ui.couponForm.reset();
+      ui.couponFormError.textContent = '';
+      ui.couponFormHeading.textContent = coupon ? 'Edit coupon' : 'Create a coupon';
+      ui.couponSave.textContent = coupon ? 'Save changes' : 'Save coupon';
+      ui.couponType.value = coupon?.discount_type || 'percentage';
+      ui.couponValue.value = coupon
+        ? (coupon.discount_type === 'fixed' ? (number(coupon.discount_value) / 100).toFixed(2) : String(coupon.discount_value))
+        : '10';
+      ui.couponCode.value = coupon?.code || '';
+      ui.couponTitle.value = coupon?.title || '';
+      ui.couponMinimum.value = (number(coupon?.minimum_subtotal_paise) / 100).toFixed(2);
+      ui.couponMaximum.value = coupon?.maximum_discount_paise ? (number(coupon.maximum_discount_paise) / 100).toFixed(2) : '';
+      ui.couponStarts.value = couponLocalDate(coupon?.starts_at);
+      ui.couponExpires.value = couponLocalDate(coupon?.expires_at);
+      ui.couponUsageLimit.value = coupon?.usage_limit || '';
+      ui.couponActive.checked = coupon ? Boolean(coupon.active) : true;
+      updateCouponValueField();
+      ui.couponEditor.hidden = false;
+      ui.couponEditor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      ui.couponCode.focus();
+    }
+    function closeCouponEditor() {
+      ui.couponEditor.hidden = true;
+      state.editingCouponId = null;
+      ui.couponForm.reset();
+      ui.couponFormError.textContent = '';
+    }
+    function updateCouponValueField() {
+      const percentage = ui.couponType.value === 'percentage';
+      ui.couponValueLabel.textContent = percentage ? 'Discount (%)' : 'Discount amount (₹)';
+      ui.couponValue.min = percentage ? '1' : '0.01';
+      ui.couponValue.max = percentage ? '100' : '99999999';
+      ui.couponValue.step = percentage ? '1' : '0.01';
+      if (percentage && Number(ui.couponValue.value) > 100) ui.couponValue.value = '10';
+    }
+    function localDateIso(value) {
+      return value ? new Date(value + ':00+05:30').toISOString() : null;
+    }
+    async function saveCoupon(values) {
+      const password = sessionStorage.getItem(STORAGE_KEY);
+      const response = await fetch('/api/admin/coupons', {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Password': password || '' },
+        body: JSON.stringify(values)
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        signOut('Your session has expired. Enter your password again.');
+        const error = new Error('Your session has expired.');
+        error.status = 401;
+        throw error;
+      }
+      if (!response.ok) throw new Error(payload.error || 'Coupon could not be saved.');
+      return payload.coupon;
+    }
+    async function toggleCoupon(coupon) {
+      try {
+        await saveCoupon({ action: 'toggle', id: coupon.id, active: !coupon.active });
+        showToast(coupon.active ? 'Coupon paused.' : 'Coupon activated.');
+        await refreshCoupons();
+      } catch (error) {
+        if (error.status !== 401) showToast(error.message || 'Coupon could not be updated.', true);
+      }
+    }
+    async function submitCouponForm(event) {
+      event.preventDefault();
+      if (!ui.couponForm.reportValidity()) return;
+      const wasEditing = Boolean(state.editingCouponId);
+      ui.couponSave.disabled = true;
+      ui.couponFormError.textContent = '';
+      const form = new FormData(ui.couponForm);
+      const payload = {
+        ...(state.editingCouponId ? { id: state.editingCouponId } : {}),
+        code: form.get('code'), title: form.get('title'), discount_type: form.get('discount_type'),
+        discount_value: form.get('discount_value'), minimum_subtotal_rupees: form.get('minimum_subtotal_rupees'),
+        maximum_discount_rupees: form.get('maximum_discount_rupees'),
+        starts_at: localDateIso(form.get('starts_at')), expires_at: localDateIso(form.get('expires_at')),
+        usage_limit: form.get('usage_limit'), active: ui.couponActive.checked
+      };
+      try {
+        await saveCoupon(payload);
+        closeCouponEditor();
+        showToast(wasEditing ? 'Coupon updated.' : 'Coupon created.');
+        await refreshCoupons();
+      } catch (error) {
+        if (error.status !== 401) ui.couponFormError.textContent = error.message || 'Coupon could not be saved.';
+      } finally {
+        ui.couponSave.disabled = false;
+      }
+    }
     function trapDrawer(event) {
       if (ui.drawer.hidden) return;
       if (event.key === 'Escape') {
@@ -1675,12 +1979,18 @@
         }
       }));
       $$('[data-logout]').forEach(button => button.addEventListener('click', () => signOut('')));
-      $('#sidebar-refresh').addEventListener('click', () => refreshOrders(false));
-      $('#topbar-refresh').addEventListener('click', () => refreshOrders(false));
+      const refreshCurrentPage = () => state.currentView === 'coupons' ? refreshCoupons() : refreshOrders(false);
+      $('#sidebar-refresh').addEventListener('click', refreshCurrentPage);
+      $('#topbar-refresh').addEventListener('click', refreshCurrentPage);
       ui.search.addEventListener('input', () => { state.search = ui.search.value; renderOrders(); });
       ui.dateFilter.addEventListener('change', () => { state.dateFilter = ui.dateFilter.value; renderOrders(); });
       $$('[data-sort]').forEach(button => button.addEventListener('click', () => updateSort(button)));
       $('#export-csv').addEventListener('click', exportOrders);
+      $('#coupon-new').addEventListener('click', () => openCouponEditor());
+      $('#coupon-cancel').addEventListener('click', closeCouponEditor);
+      $('#coupon-refresh').addEventListener('click', refreshCoupons);
+      ui.couponForm.addEventListener('submit', submitCouponForm);
+      ui.couponType.addEventListener('change', updateCouponValueField);
       ui.backdrop.addEventListener('click', () => closeDrawer());
       document.addEventListener('keydown', trapDrawer);
     }

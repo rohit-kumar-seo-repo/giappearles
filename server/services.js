@@ -194,6 +194,9 @@ export async function notifyOwner(order, customer) {
   const paymentMethod = order.payment_method === 'razorpay'
     ? 'Razorpay (paid; verified by the server)'
     : 'Offline payment (awaiting owner confirmation)';
+  const discountLine = Number(order.discount_paise) > 0
+    ? `Discount${order.coupon_code ? ` (${escapeHtml(order.coupon_code)})` : ''}: ${escapeHtml(new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.discount_paise / 100))}<br>`
+    : '';
   const html = `<h2>New GI Apparel order ${escapeHtml(order.order_number)}</h2>
     <p><strong>Payment:</strong> ${escapeHtml(paymentMethod)}</p>
     <p><strong>Customer:</strong> ${escapeHtml(customer.name)}</p>
@@ -202,6 +205,7 @@ export async function notifyOwner(order, customer) {
     <p><strong>Delivery address:</strong> ${address}</p>
     <ul>${lines}</ul>
     <p>Items: ${escapeHtml(new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.item_subtotal_paise / 100))}<br>
+    ${discountLine}
     Shipping: ${escapeHtml(new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.shipping_paise / 100))}<br>
     <strong>Total: ${escapeHtml(new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.total_paise / 100))}</strong></p>`;
   const text = [
@@ -212,6 +216,7 @@ export async function notifyOwner(order, customer) {
     `Phone: ${customer.phone}`,
     `Delivery address: ${address}`,
     `Items: ${order.item_subtotal_paise / 100} INR`,
+    ...(Number(order.discount_paise) > 0 ? [`Discount${order.coupon_code ? ` (${order.coupon_code})` : ''}: ${order.discount_paise / 100} INR`] : []),
     `Shipping: ${order.shipping_paise / 100} INR`,
     `Total: ${order.total_paise / 100} INR`
   ].join('\n');

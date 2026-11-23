@@ -34,13 +34,34 @@ export default async function handler(request, response) {
   try {
     const quote = buildOrder(body.items);
     if (body.action === 'quote') {
+      let coupon = null;
+      if (body.couponCode !== undefined && body.couponCode !== '') {
+        if (typeof body.couponCode !== 'string' || !/^[A-Za-z0-9_-]{3,32}$/.test(body.couponCode.trim())) {
+          throw new InputError('Enter a valid coupon code.');
+        }
+        coupon = await supabaseRequest('rpc/coupon_quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_code: body.couponCode.trim(), p_item_subtotal_paise: quote.itemSubtotalPaise })
+        });
+        if (!coupon?.valid) return fail(response, 400, coupon?.message || 'This coupon is not available.');
+      }
+      const discountPaise = Number(coupon?.discountPaise || 0);
       return response.status(200).json({
         itemSubtotalPaise: quote.itemSubtotalPaise,
         shippingPaise: quote.shippingPaise,
-        totalPaise: quote.totalPaise,
+        discountPaise,
+        totalPaise: quote.totalPaise - discountPaise,
+        couponCode: coupon?.code || null,
+        couponTitle: coupon?.title || null,
         currency: 'INR',
         onlinePayments: onlinePaymentsEnabled()
       });
+    }
+
+    const couponCode = body.couponCode === undefined || body.couponCode === '' ? '' : body.couponCode;
+    if (typeof couponCode !== 'string' || (couponCode && !/^[A-Za-z0-9_-]{3,32}$/.test(couponCode.trim()))) {
+      throw new InputError('Enter a valid coupon code.');
     }
 
     const authenticatedUser = await getAuthenticatedUser(request);
@@ -77,12 +98,18 @@ export default async function handler(request, response) {
       owner_notification_status: 'pending'
     };
 
-    const inserted = await supabaseRequest('orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
-      body: JSON.stringify(orderRow)
-    });
-    const savedOrder = inserted?.[0];
+    const inserted = couponCode
+      ? await supabaseRequest('rpc/create_order_with_coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_order: orderRow, p_coupon_code: couponCode.trim() })
+      })
+      : await supabaseRequest('orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
+        body: JSON.stringify(orderRow)
+      });
+    const savedOrder = Array.isArray(inserted) ? inserted[0] : inserted;
     if (!savedOrder?.id) throw new Error('The order record was not returned after insertion.');
 
     if (body.paymentMethod === 'razorpay') {
@@ -171,6 +198,9 @@ export default async function handler(request, response) {
   } catch (error) {
     if (error instanceof InputError) return fail(response, 400, error.message);
     if (error.statusCode === 401) return fail(response, 401, error.message);
+    if (body.couponCode && error.details?.code === 'P0001') {
+      return fail(response, 400, 'That coupon is no longer available. Please review it and try again.');
+    }
     console.error('Order API request failed', { error: error.message });
     return fail(response, 500, 'We could not process your order. No payment was taken. Please try again or contact us.');
   }

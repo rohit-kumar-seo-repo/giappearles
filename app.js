@@ -27,6 +27,8 @@ const AppState = {
   activeSizeCategory: 'topKurti',  // 'topKurti', 'fittingPant', 'bottomSkirtsShorts'
   sizeUnit: 'inches',              // 'inches' | 'cm'
   quickViewProduct: null,          // Currently selected product object for Quick View modal
+  checkoutCoupon: '',
+  checkoutQuoteRequest: 0,
 };
 
 // ==========================================================================
@@ -78,6 +80,13 @@ const DOM = {
   checkoutStatus: document.getElementById('checkoutStatus'),
   submitOrderBtn: document.getElementById('submitOrderBtn'),
   checkoutItemsTotal: document.getElementById('checkoutItemsTotal'),
+  checkoutCouponCode: document.getElementById('checkoutCouponCode'),
+  checkoutCouponApply: document.getElementById('checkoutCouponApply'),
+  checkoutCouponRemove: document.getElementById('checkoutCouponRemove'),
+  checkoutCouponStatus: document.getElementById('checkoutCouponStatus'),
+  checkoutDiscountRow: document.getElementById('checkoutDiscountRow'),
+  checkoutDiscountLabel: document.getElementById('checkoutDiscountLabel'),
+  checkoutDiscountTotal: document.getElementById('checkoutDiscountTotal'),
   checkoutShippingTotal: document.getElementById('checkoutShippingTotal'),
   checkoutGrandTotal: document.getElementById('checkoutGrandTotal'),
   checkoutSuccess: document.getElementById('checkoutSuccess'),
@@ -1207,6 +1216,19 @@ function initCheckoutModal() {
       });
     });
   }
+
+  if (DOM.checkoutCouponApply) DOM.checkoutCouponApply.addEventListener('click', () => refreshCheckoutQuote(DOM.checkoutCouponCode.value, true));
+  if (DOM.checkoutCouponRemove) DOM.checkoutCouponRemove.addEventListener('click', () => {
+    AppState.checkoutCoupon = '';
+    DOM.checkoutCouponCode.value = '';
+    refreshCheckoutQuote('');
+  });
+  if (DOM.checkoutCouponCode) DOM.checkoutCouponCode.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      refreshCheckoutQuote(DOM.checkoutCouponCode.value, true);
+    }
+  });
 }
 
 async function openCheckoutModal() {
@@ -1227,7 +1249,8 @@ async function openCheckoutModal() {
   } catch (error) {
     setCheckoutStatus('error', `We could not load your saved account details. You can still enter them manually. ${error.message}`);
   }
-  refreshCheckoutQuote();
+  if (DOM.checkoutCouponCode) DOM.checkoutCouponCode.value = AppState.checkoutCoupon;
+  refreshCheckoutQuote(AppState.checkoutCoupon);
 }
 
 function closeCheckoutModal() {
@@ -1268,28 +1291,75 @@ async function requestOrderApi(payload) {
   return result;
 }
 
-async function refreshCheckoutQuote() {
+async function refreshCheckoutQuote(couponCode = AppState.checkoutCoupon, applying = false, preserveCouponStatus = false) {
   if (!DOM.checkoutItemsTotal || AppState.cart.length === 0) return;
+  const requestId = ++AppState.checkoutQuoteRequest;
+  const code = String(couponCode || '').trim().toUpperCase();
+  if (DOM.checkoutCouponApply) DOM.checkoutCouponApply.disabled = true;
+  if (DOM.checkoutCouponRemove) DOM.checkoutCouponRemove.disabled = true;
   DOM.submitOrderBtn.disabled = true;
   DOM.checkoutItemsTotal.innerText = 'Calculating…';
+  if (DOM.checkoutDiscountRow) DOM.checkoutDiscountRow.hidden = true;
   DOM.checkoutShippingTotal.innerText = '—';
   DOM.checkoutGrandTotal.innerText = '—';
   try {
     const quote = await requestOrderApi({
       action: 'quote',
-      items: getCheckoutItems()
+      items: getCheckoutItems(),
+      ...(code ? { couponCode: code } : {})
     });
+    if (requestId !== AppState.checkoutQuoteRequest) return;
+    if (applying) AppState.checkoutCoupon = quote.couponCode || '';
+    if (DOM.checkoutCouponCode && applying) DOM.checkoutCouponCode.value = AppState.checkoutCoupon;
+    if (DOM.checkoutCouponApply) DOM.checkoutCouponApply.hidden = Boolean(AppState.checkoutCoupon);
+    if (DOM.checkoutCouponRemove) DOM.checkoutCouponRemove.hidden = !AppState.checkoutCoupon;
     DOM.checkoutItemsTotal.innerText = formatCheckoutMoney(quote.itemSubtotalPaise);
+    if (DOM.checkoutDiscountRow) DOM.checkoutDiscountRow.hidden = !(quote.discountPaise > 0);
+    if (DOM.checkoutDiscountLabel) DOM.checkoutDiscountLabel.innerText = quote.couponCode ? `Coupon · ${quote.couponCode}` : 'Coupon discount';
+    if (DOM.checkoutDiscountTotal) DOM.checkoutDiscountTotal.innerText = `−${formatCheckoutMoney(quote.discountPaise || 0)}`;
     DOM.checkoutShippingTotal.innerText = formatCheckoutMoney(quote.shippingPaise);
     DOM.checkoutGrandTotal.innerText = formatCheckoutMoney(quote.totalPaise);
+    if (DOM.checkoutCouponStatus && !preserveCouponStatus) {
+      DOM.checkoutCouponStatus.className = 'coupon-msg' + (quote.couponCode ? ' success' : '');
+      DOM.checkoutCouponStatus.innerText = quote.couponCode
+        ? `${quote.couponCode} applied${quote.couponTitle ? ` · ${quote.couponTitle}` : ''}.`
+        : '';
+    }
     setOnlinePaymentAvailable(quote.onlinePayments === true);
     DOM.submitOrderBtn.disabled = false;
     setCheckoutStatus('', '');
   } catch (error) {
+    if (requestId !== AppState.checkoutQuoteRequest) return;
+    if (applying) {
+      if (DOM.checkoutCouponStatus) {
+        DOM.checkoutCouponStatus.className = 'coupon-msg error';
+        DOM.checkoutCouponStatus.innerText = error.message;
+      }
+      if (DOM.checkoutCouponApply) DOM.checkoutCouponApply.hidden = Boolean(AppState.checkoutCoupon);
+      if (DOM.checkoutCouponRemove) DOM.checkoutCouponRemove.hidden = !AppState.checkoutCoupon;
+      if (DOM.checkoutCouponCode) DOM.checkoutCouponCode.value = AppState.checkoutCoupon;
+      refreshCheckoutQuote(AppState.checkoutCoupon, false, true);
+      return;
+    }
+    if (code && !applying) {
+      AppState.checkoutCoupon = '';
+      if (DOM.checkoutCouponCode) DOM.checkoutCouponCode.value = '';
+      if (DOM.checkoutCouponStatus) {
+        DOM.checkoutCouponStatus.className = 'coupon-msg error';
+        DOM.checkoutCouponStatus.innerText = error.message;
+      }
+      refreshCheckoutQuote('', false, true);
+      return;
+    }
     DOM.checkoutItemsTotal.innerText = 'Unavailable';
     DOM.checkoutShippingTotal.innerText = '—';
     DOM.checkoutGrandTotal.innerText = '—';
     setCheckoutStatus('error', `${error.message} Please try again later or contact GI Apparel on WhatsApp.`);
+  } finally {
+    if (requestId === AppState.checkoutQuoteRequest) {
+      if (DOM.checkoutCouponApply) DOM.checkoutCouponApply.disabled = false;
+      if (DOM.checkoutCouponRemove) DOM.checkoutCouponRemove.disabled = false;
+    }
   }
 }
 
@@ -1401,8 +1471,10 @@ async function submitOrder(event) {
       items: getCheckoutItems(),
       customer,
       paymentMethod,
+      ...(AppState.checkoutCoupon ? { couponCode: AppState.checkoutCoupon } : {}),
       website: formData.get('website')
     });
+    AppState.checkoutCoupon = '';
 
     if (paymentMethod === 'offline') {
       if (order.ownerNotification === 'sent') {

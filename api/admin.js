@@ -10,7 +10,7 @@ export const ORDER_STATUSES = [
 ];
 export const PAYMENT_STATUSES = ['unpaid', 'pending', 'paid', 'failed', 'refunded'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const ORDER_FIELDS = 'id,order_number,created_at,customer,items,item_subtotal_paise,shipping_paise,total_paise,payment_method,payment_status,order_status,owner_notification_status';
+const ORDER_FIELDS = 'id,order_number,created_at,customer,items,item_subtotal_paise,shipping_paise,discount_paise,coupon_code,total_paise,payment_method,payment_status,order_status,owner_notification_status';
 
 export function isAdminRequest(request) {
   const expected = process.env.ADMIN_PASSWORD?.trim();

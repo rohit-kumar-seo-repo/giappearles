@@ -10,6 +10,7 @@ import ordersHandler from './api/orders.js';
 import verifyHandler from './api/payments/verify.js';
 import webhookHandler from './api/payments/webhook.js';
 import adminHandler from './api/admin.js';
+import adminCouponsHandler from './api/admin/coupons.js';
 import { publicSupabaseConfigSource } from './server/public-config.js';
 
 try {
@@ -172,6 +173,7 @@ const server = http.createServer(async (req, res) => {
     const routes = {
       '/api/orders': ordersHandler,
       '/api/admin': adminHandler,
+      '/api/admin/coupons': adminCouponsHandler,
       '/api/payments/verify': verifyHandler,
       '/api/payments/webhook': webhookHandler,
     };
@@ -179,7 +181,7 @@ const server = http.createServer(async (req, res) => {
     const handler = routes[pathname];
 
     if (handler) {
-      const allowedMethods = pathname === '/api/admin' ? ['GET', 'POST'] : ['POST'];
+      const allowedMethods = pathname === '/api/admin' || pathname === '/api/admin/coupons' ? ['GET', 'POST'] : ['POST'];
       if (!allowedMethods.includes(req.method)) {
         res.setHeader('Allow', allowedMethods.join(', '));
         sendJson(res, 405, { error: 'Method not allowed.' });
