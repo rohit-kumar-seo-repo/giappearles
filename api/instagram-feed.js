@@ -1,10 +1,10 @@
 const FEATURED_REEL = 'DePoajdzr2r';
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=900, stale-while-revalidate=3600';
 const FALLBACK_POSTS = [
-  { image: '/assets/images/optimized/azure bloom dress1.jpg', permalink: 'https://www.instagram.com/reel/DePoajdzr2r/', type: 'VIDEO' },
-  { image: '/assets/images/optimized/alora midi.jpg', permalink: 'https://www.instagram.com/reel/DecdCrUS_yj/', type: 'VIDEO' },
-  { image: '/assets/images/optimized/azure mini skirt1.jpg', permalink: 'https://www.instagram.com/reel/DeH1DRcStuE/', type: 'VIDEO' },
-  { image: '/assets/images/optimized/rosie gingham top1.jpg', permalink: 'https://www.instagram.com/reel/DdjuZdJwSFJ/', type: 'VIDEO' },
+  { image: '/assets/images/optimized/azure bloom dress1.jpg', permalink: 'https://www.instagram.com/reel/DePoajdzr2r/', type: 'VIDEO', caption: 'A little floral moment' },
+  { image: '/assets/images/optimized/alora midi.jpg', permalink: 'https://www.instagram.com/reel/DecdCrUS_yj/', type: 'VIDEO', caption: 'A little blue, a little magic' },
+  { image: '/assets/images/optimized/azure mini skirt1.jpg', permalink: 'https://www.instagram.com/reel/DeH1DRcStuE/', type: 'VIDEO', caption: 'In my pretty skirt era' },
+  { image: '/assets/images/optimized/rosie gingham top1.jpg', permalink: 'https://www.instagram.com/reel/DdjuZdJwSFJ/', type: 'VIDEO', caption: 'Meet Rosie Gingham' },
 ];
 
 function validInstagramLink(value) {
@@ -31,6 +31,17 @@ function validInstagramImage(value) {
   }
 }
 
+function validInstagramMediaUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:'
+      && (url.hostname.endsWith('.cdninstagram.com') || url.hostname.endsWith('.fbcdn.net')
+        || ['lookaside.instagram.com', 'instagram.com'].includes(url.hostname));
+  } catch {
+    return false;
+  }
+}
+
 function normalizeMedia(media) {
   if (!validInstagramLink(media?.permalink)) return null;
   const children = Array.isArray(media.children?.data) ? media.children.data : [];
@@ -40,7 +51,16 @@ function normalizeMedia(media) {
   if (media.media_type === 'VIDEO') image = media.thumbnail_url;
   else if (media.media_type === 'CAROUSEL_ALBUM') image = isVideo ? firstChild?.thumbnail_url : firstChild?.media_url;
   if (!validInstagramImage(image)) return null;
-  return { image, permalink: media.permalink, type: isVideo ? 'VIDEO' : 'IMAGE' };
+  let video = '';
+  if (media.media_type === 'VIDEO') video = media.media_url;
+  else if (media.media_type === 'CAROUSEL_ALBUM' && isVideo) video = firstChild?.media_url;
+  return {
+    image,
+    video: validInstagramMediaUrl(video) ? video : '',
+    permalink: media.permalink,
+    type: isVideo ? 'VIDEO' : 'IMAGE',
+    caption: typeof media.caption === 'string' ? media.caption.trim().slice(0, 2200) : '',
+  };
 }
 
 function selectPosts(media) {
@@ -66,7 +86,7 @@ export default async function handler(request, response) {
 
   try {
     const url = new URL('https://graph.instagram.com/v27.0/me/media');
-    url.searchParams.set('fields', 'id,media_type,media_url,permalink,timestamp,thumbnail_url,children{media_type,media_url,thumbnail_url}');
+    url.searchParams.set('fields', 'id,caption,media_type,media_url,permalink,timestamp,thumbnail_url,children{media_type,media_url,thumbnail_url}');
     url.searchParams.set('limit', '12');
     url.searchParams.set('access_token', token);
     const upstream = await fetch(url, { signal: AbortSignal.timeout(6000) });

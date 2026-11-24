@@ -110,18 +110,31 @@
   <!-- ==========================================
        2. EDITORIAL HERO BANNER
        ========================================== -->
-  <section class="hero-section" aria-labelledby="heroTitle">
+  <section class="hero-section" id="heroCarousel" role="region" aria-roledescription="carousel" aria-label="GI Apparel campaign banners">
     <div class="hero-image-panel">
-      <img src="/assets/images/optimized/main photo.jpg" srcset="/assets/images/optimized/main%20photo-800.jpg 800w, /assets/images/optimized/main%20photo.jpg 1447w" sizes="(max-width: 767px) 100vw, 50vw" alt="Model wearing a white and blue embroidered GI Apparel dress" class="hero-image" width="1447" height="1087" fetchpriority="high" decoding="async" />
+      <img class="hero-image is-active" src="/assets/images/optimized/main photo.jpg" srcset="/assets/images/optimized/main%20photo-800.jpg 800w, /assets/images/optimized/main%20photo.jpg 1447w" sizes="100vw" alt="Model wearing a white and blue embroidered GI Apparel dress" width="1447" height="1087" fetchpriority="high" decoding="async" data-eyebrow="Handcrafted · Made to order" data-headline="Made for your" data-emphasis="sunny days." data-description="Thoughtful details, made for sunny days." data-cta="Shop now" data-category="all" />
+      <img class="hero-image" src="/assets/images/optimized/alora midi.jpg" srcset="/assets/images/optimized/alora%20midi-480.jpg 480w, /assets/images/optimized/alora%20midi-900.jpg 900w, /assets/images/optimized/alora%20midi.jpg 944w" sizes="100vw" alt="Model wearing the powder blue Alora midi dress" width="944" height="1672" loading="lazy" decoding="async" aria-hidden="true" data-eyebrow="New in · The summer edit" data-headline="Colour for" data-emphasis="the everyday." data-description="Easy silhouettes and thoughtful details for sunlit days." data-cta="Shop dresses" data-category="dresses" />
+      <img class="hero-image" src="/assets/images/optimized/gingham co-ord set1.jpg" srcset="/assets/images/optimized/gingham%20co-ord%20set1-480.jpg 480w, /assets/images/optimized/gingham%20co-ord%20set1-900.jpg 900w, /assets/images/optimized/gingham%20co-ord%20set1.jpg 1086w" sizes="100vw" alt="Model in a pink gingham GI Apparel co-ord set" width="1086" height="1448" loading="lazy" decoding="async" aria-hidden="true" data-eyebrow="Small batch · Made with care" data-headline="A little charm," data-emphasis="made just for you." data-description="Find your next favourite in the GI Apparel summer edit." data-cta="Explore the edit" data-category="coords" />
     </div>
 
     <div class="hero-headline">
-      <p class="hero-eyebrow">Handcrafted · Made to order</p>
-      <h1 id="heroTitle">Made for your <em>sunny days.</em></h1>
-      <p class="hero-description">Thoughtful details, made for sunny days.</p>
+      <p class="hero-eyebrow" id="heroEyebrow">Handcrafted · Made to order</p>
+      <h1 id="heroTitle"><span id="heroTitleLead">Made for your</span> <em id="heroTitleEmphasis">sunny days.</em></h1>
+      <p class="hero-description" id="heroDescription">Thoughtful details, made for sunny days.</p>
       <div class="hero-actions">
-        <a href="#catalog" class="btn-primary" data-shop-category="all">SHOP NOW</a>
+        <a href="#catalog" class="btn-primary" id="heroShopLink" data-shop-category="all">Shop now</a>
       </div>
+    </div>
+    <div class="hero-carousel-controls" aria-label="Hero banner controls">
+      <button class="hero-carousel-button" id="heroPrevious" type="button" aria-label="Previous banner"><span aria-hidden="true">‹</span></button>
+      <span class="hero-carousel-count" id="heroCarouselCount" aria-live="off">01 / 03</span>
+      <div class="hero-carousel-dots" role="group" aria-label="Choose a hero banner">
+        <button type="button" aria-label="Show banner 1" aria-current="true"></button>
+        <button type="button" aria-label="Show banner 2" aria-current="false"></button>
+        <button type="button" aria-label="Show banner 3" aria-current="false"></button>
+      </div>
+      <button class="hero-carousel-button" id="heroNext" type="button" aria-label="Next banner"><span aria-hidden="true">›</span></button>
+      <button class="hero-carousel-button hero-rotation-button" id="heroRotation" type="button" aria-label="Pause automatic banners" aria-pressed="true"><span aria-hidden="true">Ⅱ</span></button>
     </div>
   </section>
 
@@ -268,11 +281,18 @@
         <h2 id="instagramTitle">From our Instagram</h2>
         <p class="instagram-intro">New pieces, styling moments, and a little more of the world of GI Apparel.</p>
       </div>
-      <a class="instagram-follow-link" href="https://www.instagram.com/giapparelofficial/" target="_blank" rel="noopener noreferrer">
-        Follow @giapparelofficial <span aria-hidden="true">↗</span>
-      </a>
+      <div class="instagram-editorial-actions">
+        <a class="instagram-follow-link" href="https://www.instagram.com/giapparelofficial/" target="_blank" rel="noopener noreferrer">
+          Follow @giapparelofficial <span aria-hidden="true">↗</span>
+        </a>
+        <div class="instagram-carousel-controls" aria-label="Instagram carousel controls">
+          <button type="button" id="instagramPrevious" aria-label="Previous Instagram posts">‹</button>
+          <button type="button" id="instagramRotation" aria-label="Pause automatic post slides" aria-pressed="true"><span aria-hidden="true">Ⅱ</span></button>
+          <button type="button" id="instagramNext" aria-label="Next Instagram posts">›</button>
+        </div>
+      </div>
     </div>
-    <div class="instagram-feed-grid" id="instagramFeedGrid" aria-label="Latest GI Apparel Instagram posts"></div>
+    <div class="instagram-feed-grid" id="instagramFeedGrid" role="region" aria-label="Latest GI Apparel Instagram posts" tabindex="0"></div>
     <p class="instagram-feed-note" id="instagramFeedNote" hidden>See the latest moments on <a href="https://www.instagram.com/giapparelofficial/" target="_blank" rel="noopener noreferrer">Instagram</a>.</p>
   </section>
 

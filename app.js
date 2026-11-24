@@ -103,6 +103,7 @@ const DOM = {
 // 3. INITIALIZATION & EVENT LISTENERS
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  initHeroCarousel();
   initCatalog();
   initFeaturedCarousel();
   initLaunchOffer();
@@ -125,53 +126,222 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("✨ GI Apparel Web Application Initialized Successfully.");
 });
 
+function initHeroCarousel() {
+  const carousel = document.getElementById('heroCarousel');
+  if (!carousel) return;
+  const images = [...carousel.querySelectorAll('.hero-image')];
+  const dots = [...carousel.querySelectorAll('.hero-carousel-dots button')];
+  const eyebrow = document.getElementById('heroEyebrow');
+  const titleLead = document.getElementById('heroTitleLead');
+  const titleEmphasis = document.getElementById('heroTitleEmphasis');
+  const description = document.getElementById('heroDescription');
+  const headline = carousel.querySelector('.hero-headline');
+  const shopLink = document.getElementById('heroShopLink');
+  const count = document.getElementById('heroCarouselCount');
+  const rotationButton = document.getElementById('heroRotation');
+  if (images.length < 2 || !rotationButton) return;
+
+  let index = 0;
+  let timer;
+  let rotating = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let hovering = false;
+
+  const stopTimer = () => window.clearInterval(timer);
+  const updateRotation = () => {
+    stopTimer();
+    rotationButton.setAttribute('aria-pressed', String(rotating));
+    rotationButton.setAttribute('aria-label', rotating ? 'Pause automatic banners' : 'Start automatic banners');
+    rotationButton.querySelector('span').textContent = rotating ? 'Ⅱ' : '▶';
+    if (rotating && !hovering && !document.hidden) timer = window.setInterval(() => show(index + 1), 6500);
+  };
+  const show = (nextIndex) => {
+    index = (nextIndex + images.length) % images.length;
+    images.forEach((image, position) => {
+      const active = position === index;
+      image.classList.toggle('is-active', active);
+      image.setAttribute('aria-hidden', String(!active));
+    });
+    const image = images[index];
+    eyebrow.textContent = image.dataset.eyebrow;
+    titleLead.textContent = image.dataset.headline;
+    titleEmphasis.textContent = image.dataset.emphasis;
+    description.textContent = image.dataset.description;
+    shopLink.textContent = image.dataset.cta;
+    shopLink.dataset.shopCategory = image.dataset.category || 'all';
+    headline.classList.remove('hero-copy-change');
+    void headline.offsetWidth;
+    headline.classList.add('hero-copy-change');
+    count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`;
+    dots.forEach((dot, position) => dot.setAttribute('aria-current', String(position === index)));
+  };
+  const move = (step) => {
+    rotating = false;
+    show(index + step);
+    updateRotation();
+  };
+
+  carousel.querySelector('#heroPrevious').addEventListener('click', () => move(-1));
+  carousel.querySelector('#heroNext').addEventListener('click', () => move(1));
+  dots.forEach((dot, position) => dot.addEventListener('click', () => {
+    rotating = false;
+    show(position);
+    updateRotation();
+  }));
+  rotationButton.addEventListener('click', () => {
+    rotating = !rotating;
+    updateRotation();
+  });
+  carousel.addEventListener('pointerenter', () => { hovering = true; stopTimer(); });
+  carousel.addEventListener('pointerleave', () => { hovering = false; updateRotation(); });
+  carousel.addEventListener('focusin', () => { rotating = false; updateRotation(); });
+  document.addEventListener('visibilitychange', updateRotation);
+  show(index);
+  updateRotation();
+}
+
+let instagramVideoObserver;
+
 async function initInstagramFeed() {
   const grid = document.getElementById('instagramFeedGrid');
   if (!grid) return;
   const note = document.getElementById('instagramFeedNote');
+  const previousButton = document.getElementById('instagramPrevious');
+  const nextButton = document.getElementById('instagramNext');
+  const rotationButton = document.getElementById('instagramRotation');
   if (!grid.dataset.refreshing) {
     grid.dataset.refreshing = 'true';
     window.setInterval(initInstagramFeed, 15 * 60 * 1000);
   }
 
   try {
-    const response = await fetch('/api/instagram-feed', { headers: { Accept: 'application/json' } });
+    const response = await fetch('/api/instagram-feed', { cache: 'no-store', headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error('Instagram feed unavailable');
     const { posts } = await response.json();
     if (!Array.isArray(posts) || posts.length === 0) throw new Error('Instagram feed is empty');
 
     const cards = document.createDocumentFragment();
+    const videos = [];
     for (const post of posts.slice(0, 4)) {
-      const link = document.createElement('a');
-      link.className = 'instagram-feed-card';
-      link.href = post.permalink;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.setAttribute('aria-label', `View GI Apparel ${post.type === 'VIDEO' ? 'Reel' : 'post'} on Instagram`);
+      const card = document.createElement('article');
+      card.className = 'instagram-feed-card';
+      const frame = document.createElement('div');
+      frame.className = 'instagram-media-frame';
 
-      const image = document.createElement('img');
-      image.src = post.image;
-      image.alt = 'GI Apparel style from Instagram';
-      image.width = 480;
-      image.height = 640;
-      image.loading = 'lazy';
-      image.decoding = 'async';
-      link.append(image);
+      if (post.type === 'VIDEO' && post.video) {
+        const video = document.createElement('video');
+        video.className = 'instagram-feed-video';
+        video.poster = post.image;
+        video.src = post.video;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'none';
+        video.setAttribute('aria-hidden', 'true');
+        frame.append(video);
 
-      if (post.type === 'VIDEO') {
-        const play = document.createElement('span');
-        play.className = 'instagram-reel-badge';
-        play.setAttribute('aria-hidden', 'true');
-        play.textContent = '▶';
-        link.append(play);
+        const toggle = document.createElement('button');
+        toggle.className = 'instagram-video-toggle';
+        toggle.type = 'button';
+        toggle.setAttribute('aria-label', 'Play Reel');
+        toggle.textContent = '▶';
+        toggle.addEventListener('click', () => {
+          if (video.paused) video.play().catch(() => {});
+          else video.pause();
+        });
+        video.addEventListener('play', () => {
+          toggle.setAttribute('aria-label', 'Pause Reel');
+          toggle.textContent = 'Ⅱ';
+        });
+        video.addEventListener('pause', () => {
+          toggle.setAttribute('aria-label', 'Play Reel');
+          toggle.textContent = '▶';
+        });
+        frame.append(toggle);
+        videos.push(video);
+      } else {
+        const image = document.createElement('img');
+        image.src = post.image;
+        image.alt = 'GI Apparel style from Instagram';
+        image.width = 480;
+        image.height = 640;
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        frame.append(image);
+        if (post.type === 'VIDEO') {
+          const reelBadge = document.createElement('span');
+          reelBadge.className = 'instagram-reel-badge';
+          reelBadge.setAttribute('aria-hidden', 'true');
+          reelBadge.textContent = '▶';
+          frame.append(reelBadge);
+        }
       }
 
-      cards.append(link);
+      const caption = document.createElement('p');
+      caption.className = 'instagram-caption';
+      caption.textContent = typeof post.caption === 'string' ? post.caption : '';
+      if (!caption.textContent) caption.hidden = true;
+      const viewLink = document.createElement('a');
+      viewLink.className = 'instagram-view-link';
+      viewLink.href = post.permalink;
+      viewLink.target = '_blank';
+      viewLink.rel = 'noopener noreferrer';
+      viewLink.textContent = 'View on Instagram ↗';
+      card.append(frame, caption, viewLink);
+      cards.append(card);
     }
+    if (instagramVideoObserver) instagramVideoObserver.disconnect();
     grid.replaceChildren(cards);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = navigator.connection?.saveData;
+    if (!reducedMotion && !saveData && 'IntersectionObserver' in window) {
+      instagramVideoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(({ isIntersecting, target }) => {
+          if (isIntersecting) target.play().catch(() => {});
+          else target.pause();
+        });
+      }, { root: grid, threshold: 0.35 });
+      videos.forEach((video) => instagramVideoObserver.observe(video));
+    } else {
+      videos.forEach((video) => { video.controls = true; });
+    }
     if (note) note.hidden = true;
   } catch {
     if (note) note.hidden = false;
+  }
+
+  if (rotationButton && !grid.dataset.carouselReady) {
+    grid.dataset.carouselReady = 'true';
+    let rotating = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let hovering = false;
+    let timer;
+    const step = () => {
+      const first = grid.firstElementChild;
+      if (!first) return;
+      const distance = first.getBoundingClientRect().width + parseFloat(getComputedStyle(grid).columnGap || '0');
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      if (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - distance / 2) grid.scrollTo({ left: 0, behavior });
+      else grid.scrollBy({ left: distance, behavior });
+    };
+    const updateRotation = () => {
+      window.clearInterval(timer);
+      rotationButton.setAttribute('aria-pressed', String(rotating));
+      rotationButton.setAttribute('aria-label', rotating ? 'Pause automatic post slides' : 'Start automatic post slides');
+      rotationButton.querySelector('span').textContent = rotating ? 'Ⅱ' : '▶';
+      if (rotating && !hovering && !document.hidden) timer = window.setInterval(step, 7500);
+    };
+    previousButton?.addEventListener('click', () => {
+      rotating = false;
+      grid.scrollBy({ left: -grid.clientWidth, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      updateRotation();
+    });
+    nextButton?.addEventListener('click', () => { rotating = false; step(); updateRotation(); });
+    rotationButton.addEventListener('click', () => { rotating = !rotating; updateRotation(); });
+    grid.addEventListener('pointerenter', () => { hovering = true; window.clearInterval(timer); });
+    grid.addEventListener('pointerleave', () => { hovering = false; updateRotation(); });
+    grid.addEventListener('focusin', () => { rotating = false; updateRotation(); });
+    grid.addEventListener('pointerdown', () => { rotating = false; updateRotation(); });
+    document.addEventListener('visibilitychange', updateRotation);
+    updateRotation();
   }
 }
 
