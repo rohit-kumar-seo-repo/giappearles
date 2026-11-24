@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFeaturedCarousel();
   initLaunchOffer();
   initBrandMarquee();
+  initInstagramFeed();
   initCategoryCounts();
   initCategoryFilters();
   initSearchAndFilters();
@@ -123,6 +124,56 @@ document.addEventListener('DOMContentLoaded', () => {
   initModalAccessibility();
   console.log("✨ GI Apparel Web Application Initialized Successfully.");
 });
+
+async function initInstagramFeed() {
+  const grid = document.getElementById('instagramFeedGrid');
+  if (!grid) return;
+  const note = document.getElementById('instagramFeedNote');
+  if (!grid.dataset.refreshing) {
+    grid.dataset.refreshing = 'true';
+    window.setInterval(initInstagramFeed, 15 * 60 * 1000);
+  }
+
+  try {
+    const response = await fetch('/api/instagram-feed', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('Instagram feed unavailable');
+    const { posts } = await response.json();
+    if (!Array.isArray(posts) || posts.length === 0) throw new Error('Instagram feed is empty');
+
+    const cards = document.createDocumentFragment();
+    for (const post of posts.slice(0, 4)) {
+      const link = document.createElement('a');
+      link.className = 'instagram-feed-card';
+      link.href = post.permalink;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', `View GI Apparel ${post.type === 'VIDEO' ? 'Reel' : 'post'} on Instagram`);
+
+      const image = document.createElement('img');
+      image.src = post.image;
+      image.alt = 'GI Apparel style from Instagram';
+      image.width = 480;
+      image.height = 640;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      link.append(image);
+
+      if (post.type === 'VIDEO') {
+        const play = document.createElement('span');
+        play.className = 'instagram-reel-badge';
+        play.setAttribute('aria-hidden', 'true');
+        play.textContent = '▶';
+        link.append(play);
+      }
+
+      cards.append(link);
+    }
+    grid.replaceChildren(cards);
+    if (note) note.hidden = true;
+  } catch {
+    if (note) note.hidden = false;
+  }
+}
 
 function initMobileNavigation() {
   const toggle = document.getElementById('mobileNavToggle');

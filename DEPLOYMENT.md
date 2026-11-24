@@ -44,6 +44,8 @@ Set these Vercel **Production** environment variables before deploying the order
 
 The runtime config endpoint validates the HTTPS project URL and browser-safe publishable/anon key before returning them. Never use a service-role key, database password, Razorpay secret, Resend API key, or other privileged secret in browser configuration. `.env.example` documents the required values without containing provider secrets; `.env*` files and generated output are excluded from Git.
 
+The homepage Instagram gallery reads `/api/instagram-feed`. To sync new posts, configure a Meta app for Instagram Login, authorize the GI Apparel professional account with `instagram_business_basic`, and add its long-lived token as the server-only Vercel variable `INSTAGRAM_ACCESS_TOKEN` for both Preview and Production as needed. The website refreshes the public feed every 15 minutes and never sends the token to the browser. Do not place the token in HTML, Git, `.env` files, or client-side variables. Long-lived Instagram tokens expire, so renew the Vercel value before it expires. Until a token is configured, the gallery shows a curated selection linking to the profile.
+
 Create a GitHub repository with `main` as its production branch, then import that repository into Vercel. Select the **Other** framework preset if prompted. Use the repository root as the project root; the build and output settings are already in `vercel.json`. Add both Supabase variables to the Vercel Production environment, then deploy `main`.
 
 ## Owner dashboard
