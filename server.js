@@ -210,7 +210,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    await serveStatic(req, res, pathname);
+    await serveStatic(req, res, pathname === '/admin' || pathname === '/admin/' ? '/admin.html' : pathname);
   } catch (error) {
     console.error('Server request failed:', error.message);
 

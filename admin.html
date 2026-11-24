@@ -473,10 +473,30 @@
     .coupon-action-group { display: flex; gap: 7px; }
     .coupon-action-group button { min-height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--text); font: 600 12px var(--sans); }
     .coupon-action-group button:hover { border-color: var(--maroon); color: var(--maroon); }
+    .operations-metrics { grid-template-columns: repeat(4,minmax(0,1fr)); }
+    .operations-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; align-items: start; }
+    .operations-panel { min-width: 0; padding: 18px; }
+    .ops-order-list { display: grid; gap: 8px; }
+    .ops-order { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 11px; background: #fffdfa; }
+    .ops-order-main { min-width: 0; }
+    .ops-order-title { display: block; padding: 0; border: 0; background: transparent; color: var(--maroon); font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; }
+    .ops-order-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .ops-order-customer { margin: 4px 0 0; color: var(--text); font-size: 12px; overflow-wrap: anywhere; }
+    .ops-order-meta { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .ops-order-side { display: grid; flex: 0 0 auto; justify-items: end; gap: 5px; color: var(--muted); font-size: 10px; text-align: right; }
+    .ops-tracking-note { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .ops-tracking-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+    .ops-tracking-count { color: var(--ink); font: 500 23px/1 var(--serif); }
     @media (max-width: 980px) { .coupon-page-grid { grid-template-columns: minmax(0,1fr); } }
+    @media (max-width: 980px) { .operations-grid { grid-template-columns: minmax(0,1fr); } .operations-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } }
     @media (max-width: 640px) {
-      .mobile-nav { grid-template-columns: repeat(4,minmax(0,1fr)); padding-right: 8px; padding-left: 8px; }
+      .mobile-nav { grid-template-columns: repeat(5,minmax(0,1fr)); padding-right: 6px; padding-left: 6px; }
+      .mobile-nav .nav-button { font-size: 8px; }
       .coupon-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .operations-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .operations-panel { padding: 14px; }
+      .ops-order { gap: 8px; padding: 10px; }
+      .ops-order-side { font-size: 9px; }
       .coupon-editor, .coupon-list-panel { padding: 14px; }
       .coupon-form-row { gap: 8px; }
       .coupon-card { padding: 13px; }
@@ -519,6 +539,9 @@
       <nav class="side-nav">
         <button class="nav-button" type="button" data-view="overview" aria-current="page">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"></rect></svg></span>Overview
+        </button>
+        <button class="nav-button" type="button" data-view="operations">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5h16v13H4z"></path><path d="M8 6.5V4h8v2.5M8 11h8M8 15h5"></path><path d="m16.5 16.5 1.5 1.5 3-3"></path></svg></span>Operations
         </button>
         <button class="nav-button" type="button" data-view="orders">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg></span>Orders
@@ -595,19 +618,19 @@
             <div class="dashboard-grid">
               <section class="panel panel-pad" aria-labelledby="trend-title">
                 <div class="panel-head">
-                  <div><h2 id="trend-title" class="panel-title">Revenue &amp; orders</h2><p class="panel-note">The last 30 days, in India Standard Time</p></div>
+                  <div><h2 id="trend-title" class="panel-title">Revenue &amp; orders</h2><p class="panel-note">Last 30 days · latest 500 orders · India Standard Time</p></div>
                   <div class="legend-inline" aria-label="Chart legend"><span class="legend-item"><i class="legend-dot"></i>Paid revenue</span><span class="legend-item"><i class="legend-dot gold"></i>Orders</span></div>
                 </div>
                 <div id="trend-chart" class="trend-chart"></div>
               </section>
               <section class="panel panel-pad" aria-labelledby="status-chart-title">
-                <div class="panel-head"><div><h2 id="status-chart-title" class="panel-title">Order status</h2><p class="panel-note">Where every order stands today</p></div></div>
+                <div class="panel-head"><div><h2 id="status-chart-title" class="panel-title">Order status</h2><p class="panel-note">Status of the latest 500 orders</p></div></div>
                 <div class="donut-layout"><div id="status-donut" class="donut-visual"></div><div id="status-legend" class="status-legend"></div></div>
               </section>
             </div>
             <div class="dashboard-grid equal">
               <section class="panel panel-pad" aria-labelledby="product-title">
-                <div class="panel-head"><div><h2 id="product-title" class="panel-title">Loved most</h2><p class="panel-note">Top products by pieces ordered</p></div></div>
+                <div class="panel-head"><div><h2 id="product-title" class="panel-title">Loved most</h2><p class="panel-note">Most pieces ordered in the latest 500 orders</p></div></div>
                 <div id="top-products" class="product-list"></div>
               </section>
               <section class="panel panel-pad" aria-labelledby="attention-title">
@@ -626,6 +649,25 @@
                 </div>
               </section>
             </div>
+          </div>
+        </section>
+
+        <section id="page-operations" class="page" aria-labelledby="operations-heading" hidden>
+          <div class="page-heading">
+            <div><p class="eyebrow">Keep every order moving</p><h1 id="operations-heading" tabindex="-1">Operations</h1><p class="page-description">A focused queue for order, payment, email and dispatch follow-up. Counts use the latest 500 orders.</p></div>
+          </div>
+          <div class="metric-grid operations-metrics" aria-live="polite">
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Confirm orders</p><span class="metric-glyph" aria-hidden="true">✳</span></div><strong id="ops-confirm-count" class="metric-value">—</strong><p class="metric-note">New requests to review</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Payment issues</p><span class="metric-glyph" aria-hidden="true">₹</span></div><strong id="ops-payment-count" class="metric-value">—</strong><p class="metric-note">Failed or interrupted payments</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Email alerts</p><span class="metric-glyph" aria-hidden="true">✉</span></div><strong id="ops-email-count" class="metric-value">—</strong><p class="metric-note">Owner notifications need review</p></article>
+            <article class="metric-card"><div class="metric-top"><p class="metric-label">Dispatch watch</p><span class="metric-glyph" aria-hidden="true">↗</span></div><strong id="ops-dispatch-count" class="metric-value">—</strong><p class="metric-note">10+ working days since order</p></article>
+          </div>
+          <div class="operations-grid">
+            <section class="panel operations-panel" aria-labelledby="ops-confirm-title"><div class="panel-head"><div><h2 id="ops-confirm-title" class="panel-title">Awaiting confirmation</h2><p class="panel-note">New order requests not yet confirmed</p></div></div><div id="ops-confirm-list" class="ops-order-list"></div></section>
+            <section class="panel operations-panel" aria-labelledby="ops-payment-title"><div class="panel-head"><div><h2 id="ops-payment-title" class="panel-title">Payment exceptions</h2><p class="panel-note">Check failed or interrupted online payments</p></div></div><div id="ops-payment-list" class="ops-order-list"></div></section>
+            <section class="panel operations-panel" aria-labelledby="ops-email-title"><div class="panel-head"><div><h2 id="ops-email-title" class="panel-title">Email delivery</h2><p class="panel-note">Owner order notifications that failed or stayed pending</p></div></div><div id="ops-email-list" class="ops-order-list"></div></section>
+            <section class="panel operations-panel" aria-labelledby="ops-dispatch-title"><div class="panel-head"><div><h2 id="ops-dispatch-title" class="panel-title">Made-to-order dispatch watch</h2><p class="panel-note">Confirmed or processing orders at 10+ working days</p></div></div><div id="ops-dispatch-list" class="ops-order-list"></div><p class="panel-note">Weekends are excluded; public holidays are not included in this estimate.</p></section>
+            <section class="panel operations-panel" aria-labelledby="ops-tracking-title"><div class="panel-head"><div><h2 id="ops-tracking-title" class="panel-title">Shipping status</h2><p class="panel-note">Current order status counts</p></div></div><p id="ops-tracking-count" class="ops-tracking-count">—</p><div class="ops-tracking-actions"><p id="ops-tracking-note" class="ops-tracking-note">—</p><button class="subtle-button" type="button" data-view="orders" data-status-shortcut="shipped">View shipped</button></div></section>
           </div>
         </section>
 
@@ -724,6 +766,7 @@
 
     <nav class="mobile-nav" aria-label="Mobile navigation">
       <button class="nav-button" type="button" data-view="overview" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"></rect></svg></span>Overview</button>
+      <button class="nav-button" type="button" data-view="operations"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5h16v13H4z"></path><path d="M8 6.5V4h8v2.5M8 11h8M8 15h5"></path><path d="m16.5 16.5 1.5 1.5 3-3"></path></svg></span>Operations</button>
       <button class="nav-button" type="button" data-view="orders"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg></span>Orders</button>
       <button class="nav-button" type="button" data-view="customers"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.7 19c.5-3.1 2.5-4.7 5.3-4.7s4.8 1.6 5.3 4.7M16 5.2a3.1 3.1 0 0 1 0 5.8M16.5 14.5c2.1.4 3.4 1.9 3.8 4.5"></path></svg></span>Customers</button>
       <button class="nav-button" type="button" data-view="coupons"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z"></path><path d="M13 8.5 10 15.5M10 9h.01M13 15h.01"></path></svg></span>Coupons</button>
@@ -783,7 +826,7 @@
       togglePassword: $('#toggle-password'), loginError: $('#login-error'), loginSubmit: $('#login-submit'),
       loginSubmitLabel: $('#login-submit-label'), app: $('#app-shell'), updated: $('#updated-label'),
       topbarTitle: $('#topbar-title'), topbarSubtitle: $('#topbar-subtitle'),
-      overviewPage: $('#page-overview'), ordersPage: $('#page-orders'), customersPage: $('#page-customers'), couponsPage: $('#page-coupons'),
+      overviewPage: $('#page-overview'), operationsPage: $('#page-operations'), ordersPage: $('#page-orders'), customersPage: $('#page-customers'), couponsPage: $('#page-coupons'),
       overviewLoading: $('#overview-loading'), overviewContent: $('#overview-content'),
       trendChart: $('#trend-chart'), donut: $('#status-donut'), statusLegend: $('#status-legend'),
       products: $('#top-products'), attention: $('#attention-list'), recent: $('#recent-table-body'),
@@ -891,14 +934,16 @@
       ui.togglePassword.disabled = busy;
     }
     function setPage(view) {
-      const known = ['overview', 'orders', 'customers', 'coupons'];
+      const known = ['overview', 'operations', 'orders', 'customers', 'coupons'];
       state.currentView = known.includes(view) ? view : 'overview';
       ui.overviewPage.hidden = state.currentView !== 'overview';
+      ui.operationsPage.hidden = state.currentView !== 'operations';
       ui.ordersPage.hidden = state.currentView !== 'orders';
       ui.customersPage.hidden = state.currentView !== 'customers';
       ui.couponsPage.hidden = state.currentView !== 'coupons';
       const config = {
         overview: ['Overview', 'A clear view of what is happening in your store.'],
+        operations: ['Operations', 'A focused queue for orders that need follow-up.'],
         orders: ['Orders', 'Manage each order with care.'],
         customers: ['Customers', 'A warm view of the people behind the orders.'],
         coupons: ['Coupons', 'Thoughtful offers, with clear rules and results.']
@@ -910,6 +955,7 @@
         else button.removeAttribute('aria-current');
       });
       if (state.currentView === 'orders') renderOrders();
+      if (state.currentView === 'operations') renderOperations();
       if (state.currentView === 'customers') renderCustomers();
       if (state.currentView === 'coupons') refreshCoupons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -961,6 +1007,7 @@
       state.lastUpdated = new Date();
       setUpdated();
       renderOverview();
+      renderOperations();
       renderOrders();
       renderCustomers();
       if (state.activeOrderId) {
@@ -1444,6 +1491,9 @@
       $('#metric-revenue').textContent = money(paid);
       $('#metric-new').textContent = String(newCount);
       $('#metric-aov').textContent = orders.length ? money(total / orders.length) : money(0);
+      $('#metric-orders').nextElementSibling.textContent = 'Latest ' + orders.length + ' orders loaded (maximum 500)';
+      $('#metric-revenue').nextElementSibling.textContent = 'Paid from latest ' + orders.length + ' orders';
+      $('#metric-aov').nextElementSibling.textContent = 'Across latest ' + orders.length + ' received orders';
       const cod = orders.filter(order => order.payment_method === 'offline').length;
       const online = orders.filter(order => order.payment_method === 'razorpay').length;
       const totalMethods = cod + online;
@@ -1459,6 +1509,77 @@
       renderStatusChart(orders);
       renderTopProducts(orders);
       renderAttentionAndRecent();
+    }
+    function workingDaysSince(value) {
+      const startKey = dayKey(value);
+      const todayKey = dayKey(new Date());
+      if (!startKey || !todayKey) return null;
+      const cursor = new Date(startKey + 'T00:00:00Z');
+      const today = new Date(todayKey + 'T00:00:00Z');
+      let days = 0;
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+      while (cursor <= today) {
+        const weekday = cursor.getUTCDay();
+        if (weekday !== 0 && weekday !== 6) days += 1;
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+      }
+      return days;
+    }
+    function renderOperations() {
+      const orders = state.orders;
+      const confirmations = orders.filter(order => order.order_status === 'request_received');
+      const payments = orders.filter(order => order.order_status !== 'cancelled'
+        && (order.payment_status === 'failed' || order.order_status === 'payment_initialization_failed'));
+      const emailAlerts = orders.filter(order => order.owner_notification_status === 'failed'
+        || (order.owner_notification_status === 'pending'
+          && Date.now() - new Date(order.created_at).getTime() > 15 * 60 * 1000));
+      const dispatch = orders.map(order => ({ order, days: workingDaysSince(order.created_at) }))
+        .filter(entry => ['confirmed', 'processing'].includes(entry.order.order_status) && entry.days >= 10)
+        .sort((a, b) => b.days - a.days);
+      const shipped = orders.filter(order => order.order_status === 'shipped').length;
+      const delivered = orders.filter(order => order.order_status === 'delivered').length;
+
+      $('#ops-confirm-count').textContent = String(confirmations.length);
+      $('#ops-payment-count').textContent = String(payments.length);
+      $('#ops-email-count').textContent = String(emailAlerts.length);
+      $('#ops-dispatch-count').textContent = String(dispatch.length);
+      $('#ops-tracking-count').textContent = shipped + ' shipped · ' + delivered + ' delivered';
+      $('#ops-tracking-note').textContent = shipped
+        ? 'Carrier and tracking references are not stored in the current order records.'
+        : 'No orders are marked shipped in the latest orders loaded.';
+
+      renderOperationsQueue($('#ops-confirm-list'), confirmations, 'All caught up', 'There are no new orders waiting for confirmation.', order => 'Placed ' + orderDate(order.created_at), 'New order', 'badge-new');
+      renderOperationsQueue($('#ops-payment-list'), payments, 'No payment issues', 'Failed or interrupted payments will appear here.', order => paymentInfo(order.payment_status)[0] + (order.payment_method === 'razorpay' ? ' · Online' : ' · COD'), 'Payment issue', 'badge-failed');
+      renderOperationsQueue($('#ops-email-list'), emailAlerts, 'Notifications are healthy', 'Failed or delayed owner emails will appear here.', order => order.owner_notification_status === 'failed' ? 'Owner email failed' : 'Owner email pending for 15+ minutes', 'Email alert', order => order.owner_notification_status === 'failed' ? 'badge-failed' : 'badge-pending');
+      renderOperationsQueue($('#ops-dispatch-list'), dispatch.map(entry => entry.order), 'No dispatch follow-up due', 'Confirmed orders will appear here after 10 working days.', order => {
+        const days = workingDaysSince(order.created_at);
+        return days + ' working days · ' + (days > 12 ? 'past the 12-day window' : 'check dispatch timing');
+      }, 'Dispatch watch', order => workingDaysSince(order.created_at) > 12 ? 'badge-failed' : 'badge-pending');
+    }
+    function renderOperationsQueue(target, orders, emptyTitle, emptyCopy, detail, label, badgeClass) {
+      target.replaceChildren();
+      if (!orders.length) {
+        target.append(makeEmpty(emptyTitle, emptyCopy));
+        return;
+      }
+      orders.slice(0, 8).forEach(order => {
+        const row = make('article', 'ops-order');
+        const main = make('div', 'ops-order-main');
+        const open = make('button', 'ops-order-title', '#' + orderNumber(order));
+        open.type = 'button';
+        open.addEventListener('click', () => openOrder(order.id, open));
+        main.append(open, make('p', 'ops-order-customer', text(order.customer && order.customer.name, 'Customer')));
+        main.append(make('p', 'ops-order-meta', detail(order)));
+        const side = make('div', 'ops-order-side');
+        side.append(badge(label, typeof badgeClass === 'function' ? badgeClass(order) : badgeClass));
+        side.append(make('span', '', orderDate(order.created_at)));
+        row.append(main, side);
+        target.append(row);
+      });
+      if (orders.length > 8) {
+        const more = make('p', 'panel-note', 'Showing 8 of ' + orders.length + ' orders. Open Orders to search the full list.');
+        target.append(more);
+      }
     }
     function renderRevenueChart(orders) {
       const width = 700, height = 220, left = 45, right = 10, top = 14, bottom = 28;
