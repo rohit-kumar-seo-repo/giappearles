@@ -184,8 +184,8 @@ test('checkout accepts first-party Vercel hosts and rejects other origins', asyn
 });
 
 test('online payment is offered only with Razorpay keys, and only live keys in production', async () => {
-  const { onlinePaymentsEnabled } = await import('../server/services.js');
-  const keys = ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'VERCEL_ENV'];
+  const { onlinePaymentsEnabled, razorpayCredentials } = await import('../server/services.js');
+  const keys = ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_TEST_API', 'RAZORPAY_TEST_SECRET', 'VERCEL_ENV'];
   const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
   try {
     for (const key of keys) delete process.env[key];
@@ -199,7 +199,18 @@ test('online payment is offered only with Razorpay keys, and only live keys in p
     process.env.VERCEL_ENV = 'production';
     assert.equal(onlinePaymentsEnabled(), false, 'test keys must not take production payments');
 
+    delete process.env.RAZORPAY_KEY_ID;
+    delete process.env.RAZORPAY_KEY_SECRET;
+    process.env.RAZORPAY_TEST_API = 'rzp_test_preview';
+    process.env.RAZORPAY_TEST_SECRET = 'preview-secret';
+    process.env.VERCEL_ENV = 'preview';
+    assert.equal(onlinePaymentsEnabled(), true, 'legacy-named test keys enable preview payments');
+    assert.deepEqual(razorpayCredentials(), { keyId: 'rzp_test_preview', keySecret: 'preview-secret' });
+    process.env.VERCEL_ENV = 'production';
+    assert.equal(onlinePaymentsEnabled(), false, 'test aliases are never accepted in production');
+
     process.env.RAZORPAY_KEY_ID = 'rzp_live_abc';
+    process.env.RAZORPAY_KEY_SECRET = 'live-secret';
     assert.equal(onlinePaymentsEnabled(), true, 'live keys in production');
     delete process.env.RAZORPAY_KEY_SECRET;
     assert.equal(onlinePaymentsEnabled(), false, 'missing secret');

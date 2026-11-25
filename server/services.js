@@ -111,18 +111,25 @@ export async function consumeOrderRateLimit(request) {
 // production deployment it also requires live keys: Razorpay test keys accept
 // public test cards, so they must never mark real storefront orders as paid.
 export function onlinePaymentsEnabled() {
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim() || '';
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() || '';
+  const { keyId, keySecret } = razorpayCredentialsIfConfigured();
   if (!keyId || !keySecret) return false;
   if (process.env.VERCEL_ENV === 'production') return keyId.startsWith('rzp_live_');
   return true;
 }
 
-export function razorpayCredentials() {
+function razorpayCredentialsIfConfigured() {
+  const allowTestAliases = process.env.VERCEL_ENV !== 'production';
   return {
-    keyId: requiredEnv('RAZORPAY_KEY_ID'),
-    keySecret: requiredEnv('RAZORPAY_KEY_SECRET')
+    keyId: process.env.RAZORPAY_KEY_ID?.trim() || (allowTestAliases ? process.env.RAZORPAY_TEST_API?.trim() : '') || '',
+    keySecret: process.env.RAZORPAY_KEY_SECRET?.trim() || (allowTestAliases ? process.env.RAZORPAY_TEST_SECRET?.trim() : '') || '',
   };
+}
+
+export function razorpayCredentials() {
+  const { keyId, keySecret } = razorpayCredentialsIfConfigured();
+  if (!keyId) throw new Error('Missing required server environment variable: RAZORPAY_KEY_ID');
+  if (!keySecret) throw new Error('Missing required server environment variable: RAZORPAY_KEY_SECRET');
+  return { keyId, keySecret };
 }
 
 export async function createRazorpayOrder(order) {

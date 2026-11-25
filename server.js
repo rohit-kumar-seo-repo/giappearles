@@ -12,6 +12,7 @@ import webhookHandler from './api/payments/webhook.js';
 import adminHandler from './api/admin.js';
 import adminCouponsHandler from './api/admin/coupons.js';
 import instagramFeedHandler from './api/instagram-feed.js';
+import { parseByteRange } from './server/byte-range.js';
 import { publicSupabaseConfigSource } from './server/public-config.js';
 
 try {
@@ -34,6 +35,7 @@ const mimeTypes = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
 };
@@ -118,15 +120,42 @@ async function serveStatic(req, res, pathname) {
       return;
     }
 
-    const content = await readFile(filePath);
     const extension = path.extname(filePath).toLowerCase();
-
-    res.writeHead(200, {
+    const sharedHeaders = {
       'Content-Type': mimeTypes[extension] || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-    });
+    };
+
+    if (extension === '.mp4') {
+      const content = await readFile(filePath);
+      const range = req.headers.range;
+      if (range) {
+        const byteRange = parseByteRange(range, info.size);
+        if (!byteRange) {
+          res.writeHead(416, { ...sharedHeaders, 'Accept-Ranges': 'bytes', 'Content-Range': `bytes */${info.size}` });
+          res.end();
+          return;
+        }
+        const { start, end } = byteRange;
+        res.writeHead(206, {
+          ...sharedHeaders,
+          'Accept-Ranges': 'bytes',
+          'Content-Range': `bytes ${start}-${end}/${info.size}`,
+          'Content-Length': end - start + 1,
+        });
+        res.end(req.method === 'HEAD' ? undefined : content.subarray(start, end + 1));
+        return;
+      }
+      res.writeHead(200, { ...sharedHeaders, 'Accept-Ranges': 'bytes', 'Content-Length': info.size });
+      res.end(req.method === 'HEAD' ? undefined : content);
+      return;
+    }
+
+    const content = await readFile(filePath);
+
+    res.writeHead(200, sharedHeaders);
 
     if (req.method === 'HEAD') {
       res.end();

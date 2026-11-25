@@ -34,7 +34,7 @@ Set these Vercel **Production** environment variables before deploying the order
 - `SUPABASE_URL`: the existing GI-Apparel Supabase project URL.
 - `SUPABASE_PUBLISHABLE_KEY`: its browser-safe publishable key (or legacy `anon` key).
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only Supabase service-role key. Never add this to a `NEXT_PUBLIC_*` or browser variable.
-- `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`: the Razorpay API credentials (the key ID is sent to Razorpay Checkout by the server; the secret is server-only).
+- `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`: the Razorpay API credentials (the key ID is sent to Razorpay Checkout by the server; the secret is server-only). Preview deployments may use `RAZORPAY_TEST_API` and `RAZORPAY_TEST_SECRET`; these aliases are ignored in Production, where online payments require a live `RAZORPAY_KEY_ID`.
 - `RAZORPAY_WEBHOOK_SECRET`: the separate webhook signing secret configured in Razorpay.
 - `RESEND_API_KEY`: server-only Resend API key.
 - `ORDER_NOTIFICATION_TO`: `hello.giapparel@gmail.com`.
@@ -44,7 +44,7 @@ Set these Vercel **Production** environment variables before deploying the order
 
 The runtime config endpoint validates the HTTPS project URL and browser-safe publishable/anon key before returning them. Never use a service-role key, database password, Razorpay secret, Resend API key, or other privileged secret in browser configuration. `.env.example` documents the required values without containing provider secrets; `.env*` files and generated output are excluded from Git.
 
-The homepage Instagram carousel reads `/api/instagram-feed`. To sync posts, captions, and autoplay-ready Reel media, configure a Meta app for Instagram Login, authorize the GI Apparel professional account with `instagram_business_basic`, and add its long-lived token as the server-only Vercel variable `INSTAGRAM_ACCESS_TOKEN` for Preview and Production as needed. The website refreshes the feed every 15 minutes and never sends the token to the browser. Do not place the token in HTML, Git, `.env` files, or client-side variables. Long-lived Instagram tokens expire, so renew the Vercel value before expiry. Until a token is configured, the gallery shows selected post covers, captions, and Instagram links; the actual videos are unavailable.
+The homepage Instagram carousel reads `/api/instagram-feed`. The four selected Reels have optimized local video files, captions, and direct Instagram links, so they play without a Meta token. To sync newer posts and their current captions automatically, configure a Meta app for Instagram Login, authorize the GI Apparel professional account with `instagram_business_basic`, and add its long-lived token as the server-only Vercel variable `INSTAGRAM_ACCESS_TOKEN` for Preview and Production as needed. Matching selected Reels continue using the supplied local videos; other posts use Meta's video URL. The website refreshes the feed every 15 minutes and never sends the token to the browser. Do not place the token in HTML, Git, `.env` files, or client-side variables. Long-lived Instagram tokens expire, so renew the Vercel value before expiry.
 
 Create a GitHub repository with `main` as its production branch, then import that repository into Vercel. Select the **Other** framework preset if prompted. Use the repository root as the project root; the build and output settings are already in `vercel.json`. Add both Supabase variables to the Vercel Production environment, then deploy `main`.
 

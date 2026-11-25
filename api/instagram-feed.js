@@ -1,11 +1,16 @@
 const FEATURED_REEL = 'DePoajdzr2r';
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=900, stale-while-revalidate=3600';
-const FALLBACK_POSTS = [
-  { image: '/assets/images/optimized/azure bloom dress1.jpg', permalink: 'https://www.instagram.com/reel/DePoajdzr2r/', type: 'VIDEO', caption: 'A little floral moment' },
-  { image: '/assets/images/optimized/alora midi.jpg', permalink: 'https://www.instagram.com/reel/DecdCrUS_yj/', type: 'VIDEO', caption: 'A little blue, a little magic' },
-  { image: '/assets/images/optimized/azure mini skirt1.jpg', permalink: 'https://www.instagram.com/reel/DeH1DRcStuE/', type: 'VIDEO', caption: 'In my pretty skirt era' },
-  { image: '/assets/images/optimized/rosie gingham top1.jpg', permalink: 'https://www.instagram.com/reel/DdjuZdJwSFJ/', type: 'VIDEO', caption: 'Meet Rosie Gingham' },
-];
+const LOCAL_REELS = {
+  DePoajdzr2r: { image: '/assets/images/optimized/instagram-floral-moment.jpg', video: '/assets/videos/instagram/floral-moment.mp4', caption: 'A little floral moment' },
+  DecdCrUS_yj: { image: '/assets/images/optimized/instagram-navy-halter.jpg', video: '/assets/videos/instagram/navy-halter-reel.mp4', caption: 'A little blue, a little magic' },
+  DeH1DRcStuE: { image: '/assets/images/optimized/instagram-floral-skirt.jpg', video: '/assets/videos/instagram/floral-skirt-reel.mp4', caption: 'In my pretty skirt era' },
+  DdjuZdJwSFJ: { image: '/assets/images/optimized/instagram-rosie-gingham.jpg', video: '/assets/videos/instagram/rosie-gingham-reel.mp4', caption: 'Meet Rosie Gingham' },
+};
+const FALLBACK_POSTS = Object.entries(LOCAL_REELS).map(([shortcode, post]) => ({
+  ...post,
+  permalink: `https://www.instagram.com/reel/${shortcode}/`,
+  type: 'VIDEO',
+}));
 
 function validInstagramLink(value) {
   try {
@@ -54,12 +59,16 @@ function normalizeMedia(media) {
   let video = '';
   if (media.media_type === 'VIDEO') video = media.media_url;
   else if (media.media_type === 'CAROUSEL_ALBUM' && isVideo) video = firstChild?.media_url;
+  const shortcode = new URL(media.permalink).pathname.split('/')[2];
+  const localReel = LOCAL_REELS[shortcode];
   return {
-    image,
-    video: validInstagramMediaUrl(video) ? video : '',
+    image: localReel?.image || image,
+    video: localReel?.video || (validInstagramMediaUrl(video) ? video : ''),
     permalink: media.permalink,
-    type: isVideo ? 'VIDEO' : 'IMAGE',
-    caption: typeof media.caption === 'string' ? media.caption.trim().slice(0, 2200) : '',
+    type: localReel || isVideo ? 'VIDEO' : 'IMAGE',
+    caption: typeof media.caption === 'string' && media.caption.trim()
+      ? media.caption.trim().slice(0, 2200)
+      : localReel?.caption || '',
   };
 }
 
@@ -93,7 +102,9 @@ export default async function handler(request, response) {
     if (!upstream.ok) return respond(response, 200, { posts: FALLBACK_POSTS });
     const payload = await upstream.json();
     const posts = selectPosts(Array.isArray(payload.data) ? payload.data : []);
-    return respond(response, 200, { posts: posts.length ? posts : FALLBACK_POSTS });
+    if (!posts.length) return respond(response, 200, { posts: FALLBACK_POSTS });
+    const pinnedPosts = FALLBACK_POSTS.filter((fallback) => !posts.some((post) => post.permalink === fallback.permalink));
+    return respond(response, 200, { posts: [...posts, ...pinnedPosts] });
   } catch {
     return respond(response, 200, { posts: FALLBACK_POSTS });
   }

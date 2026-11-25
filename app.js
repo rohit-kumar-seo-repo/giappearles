@@ -152,7 +152,7 @@ function initHeroCarousel() {
     rotationButton.setAttribute('aria-pressed', String(rotating));
     rotationButton.setAttribute('aria-label', rotating ? 'Pause automatic banners' : 'Start automatic banners');
     rotationButton.querySelector('span').textContent = rotating ? 'Ⅱ' : '▶';
-    if (rotating && !hovering && !document.hidden) timer = window.setInterval(() => show(index + 1), 6500);
+    if (rotating && !hovering && !document.hidden) timer = window.setInterval(() => show(index + 1), 7500);
   };
   const show = (nextIndex) => {
     index = (nextIndex + images.length) % images.length;
@@ -221,7 +221,7 @@ async function initInstagramFeed() {
 
     const cards = document.createDocumentFragment();
     const videos = [];
-    for (const post of posts.slice(0, 4)) {
+    for (const post of posts.slice(0, 8)) {
       const card = document.createElement('article');
       card.className = 'instagram-feed-card';
       const frame = document.createElement('div');
