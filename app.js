@@ -152,7 +152,7 @@ function initHeroCarousel() {
     rotationButton.setAttribute('aria-pressed', String(rotating));
     rotationButton.setAttribute('aria-label', rotating ? 'Pause automatic banners' : 'Start automatic banners');
     rotationButton.querySelector('span').textContent = rotating ? 'Ⅱ' : '▶';
-    if (rotating && !hovering && !document.hidden) timer = window.setInterval(() => show(index + 1), 7500);
+    if (rotating && !hovering && !document.hidden) timer = window.setInterval(() => show(index + 1), 2800);
   };
   const show = (nextIndex) => {
     index = (nextIndex + images.length) % images.length;
@@ -175,7 +175,6 @@ function initHeroCarousel() {
     dots.forEach((dot, position) => dot.setAttribute('aria-current', String(position === index)));
   };
   const move = (step) => {
-    rotating = false;
     show(index + step);
     updateRotation();
   };
@@ -183,7 +182,6 @@ function initHeroCarousel() {
   carousel.querySelector('#heroPrevious').addEventListener('click', () => move(-1));
   carousel.querySelector('#heroNext').addEventListener('click', () => move(1));
   dots.forEach((dot, position) => dot.addEventListener('click', () => {
-    rotating = false;
     show(position);
     updateRotation();
   }));
@@ -193,7 +191,12 @@ function initHeroCarousel() {
   });
   carousel.addEventListener('pointerenter', () => { hovering = true; stopTimer(); });
   carousel.addEventListener('pointerleave', () => { hovering = false; updateRotation(); });
-  carousel.addEventListener('focusin', () => { rotating = false; updateRotation(); });
+  carousel.addEventListener('focusin', () => {
+    if (document.activeElement.matches(':focus-visible')) {
+      rotating = false;
+      updateRotation();
+    }
+  });
   document.addEventListener('visibilitychange', updateRotation);
   show(index);
   updateRotation();

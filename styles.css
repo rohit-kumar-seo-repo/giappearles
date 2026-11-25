@@ -3418,6 +3418,7 @@ body.storefront-page .featured-edit-heading h2,
 body.storefront-page .section-title { color: #2e1019; font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 500; }
 body.storefront-page .featured-edit-heading p { color: var(--color-text-muted); font-size: 0.95rem; }
 body.storefront-page .featured-rail { gap: 16px; }
+body.storefront-page .featured-product-image-wrap { aspect-ratio: 4 / 5; border-radius: 8px; }
 body.storefront-page .catalog-section { padding-block: 3rem 5rem; }
 body.storefront-page .brand-story { padding-block: 4rem; }
 body.storefront-page .site-footer { margin-top: 2rem; }
@@ -3983,8 +3984,8 @@ body.storefront-page .hero-headline {
   z-index: 2;
   top: 50%;
   left: clamp(1.5rem, 7.5vw, 7.5rem);
-  width: min(40rem, 43%);
-  max-width: 40rem;
+  width: min(44rem, 50%);
+  max-width: 44rem;
   margin: 0;
   padding: 0;
   color: #fff;
@@ -3998,10 +3999,10 @@ body.storefront-page .hero-headline .hero-eyebrow {
   letter-spacing: .2em;
 }
 body.storefront-page .hero-headline h1 {
-  max-width: 10ch;
+  max-width: 15ch;
   margin: 0 0 1rem;
   color: #fff;
-  font-size: clamp(3.2rem, 6.4vw, 6.4rem);
+  font-size: clamp(3.1rem, 5.2vw, 5.4rem);
   line-height: .98;
   text-wrap: balance;
   text-shadow: 0 2px 24px rgba(22, 7, 12, .16);
@@ -4053,7 +4054,7 @@ body.storefront-page .hero-carousel-controls { top: 1.5rem; right: clamp(1rem, 3
     max-width: none;
     translate: none;
   }
-  body.storefront-page .hero-headline h1 { max-width: 8ch; font-size: clamp(2.8rem, 11vw, 4.2rem); }
+  body.storefront-page .hero-headline h1 { max-width: 15ch; font-size: clamp(2.8rem, 9.5vw, 4.1rem); line-height: .98; }
   body.storefront-page .hero-headline .hero-eyebrow { margin-bottom: .7rem; font-size: .64rem; }
   body.storefront-page .hero-headline .hero-description { max-width: 30rem; margin-bottom: 1.1rem; font-size: .95rem; }
   body.storefront-page .hero-actions { flex-direction: row; align-items: flex-start; }
@@ -4061,4 +4062,12 @@ body.storefront-page .hero-carousel-controls { top: 1.5rem; right: clamp(1rem, 3
 }
 @media (prefers-reduced-motion: reduce) {
   .instagram-feed-video { transition: none; }
+}
+
+body.storefront-page .featured-edit {
+  width: 100%;
+  max-width: none;
+  padding: clamp(2rem, 3.5vw, 3rem) max(16px, calc((100vw - 1280px) / 2)) 3.5rem;
+  border-radius: 0;
+  background: #f8f3f0;
 }
