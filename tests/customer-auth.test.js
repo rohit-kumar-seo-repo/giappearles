@@ -58,10 +58,10 @@ test('authenticated checkout links the saved order to the verified customer', as
     'SUPABASE_PUBLISHABLE_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
     'ORDER_RATE_LIMIT_SECRET',
-    'RESEND_API_KEY',
-    'ORDER_NOTIFICATION_FROM',
-    'ORDER_NOTIFICATION_TO',
-    'APP_ORIGIN'
+    'APP_ORIGIN',
+    'RAZORPAY_KEY_ID',
+    'RAZORPAY_KEY_SECRET',
+    'VERCEL_ENV'
   ];
   const previousEnv = Object.fromEntries(names.map((name) => [name, process.env[name]]));
   const originalFetch = globalThis.fetch;
@@ -70,10 +70,10 @@ test('authenticated checkout links the saved order to the verified customer', as
     SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
     SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
     ORDER_RATE_LIMIT_SECRET: 'test-rate-limit-secret',
-    RESEND_API_KEY: 'test-resend-key',
-    ORDER_NOTIFICATION_FROM: 'GI Apparel <orders@example.com>',
-    ORDER_NOTIFICATION_TO: 'owner@example.com',
-    APP_ORIGIN: 'http://localhost:3000'
+    APP_ORIGIN: 'http://localhost:3000',
+    RAZORPAY_KEY_ID: 'rzp_test_customer_auth',
+    RAZORPAY_KEY_SECRET: 'test-payment-secret',
+    VERCEL_ENV: 'preview'
   });
   let insertedOrder;
 
@@ -94,11 +94,12 @@ test('authenticated checkout links the saved order to the verified customer', as
         insertedOrder = JSON.parse(options.body);
         return { ok: true, status: 201, text: async () => JSON.stringify([insertedOrder]) };
       }
-      if (address.startsWith('https://api.resend.com/emails')) {
-        return { ok: true, status: 200, json: async () => ({ id: 'email-id' }) };
+      if (address === 'https://api.razorpay.com/v1/orders') {
+        const paymentOrder = JSON.parse(options.body);
+        return { ok: true, status: 200, json: async () => ({ id: 'order_test_customer_auth', amount: paymentOrder.amount, currency: paymentOrder.currency }) };
       }
       if (address.includes('/rest/v1/orders?') && options.method === 'PATCH') {
-        return { ok: true, status: 200, text: async () => '[]' };
+        return { ok: true, status: 200, text: async () => JSON.stringify([{ id: insertedOrder.id }]) };
       }
       throw new Error(`Unexpected request in test: ${address}`);
     };
@@ -138,7 +139,7 @@ test('authenticated checkout links the saved order to the verified customer', as
           state: 'Rajasthan',
           postalCode: '302001'
         },
-        paymentMethod: 'offline',
+        paymentMethod: 'razorpay',
         website: ''
       }
     }, response);
@@ -146,6 +147,8 @@ test('authenticated checkout links the saved order to the verified customer', as
     assert.equal(response.statusCode, 201);
     assert.equal(insertedOrder.user_id, 'verified-customer-id');
     assert.equal(insertedOrder.customer.email, 'verified@example.com');
+    assert.equal(insertedOrder.payment_method, 'razorpay');
+    assert.equal(response.body.razorpayOrderId, 'order_test_customer_auth');
   } finally {
     globalThis.fetch = originalFetch;
     for (const [name, value] of Object.entries(previousEnv)) {

@@ -1254,16 +1254,6 @@ function restoreCart() {
   });
 }
 
-function whatsappOrderUrl() {
-  const lines = AppState.cart.map(item => (
-    `- ${item.product.name} (Size ${item.size}) x ${item.quantity} = Rs. ${(item.product.launchPrice * item.quantity).toLocaleString('en-IN')}`
-  ));
-  const text = lines.length
-    ? `Hello GI Apparel, I'd like to order:\n${lines.join('\n')}\nPlease confirm availability and payment details.`
-    : 'Hello GI Apparel, I need help placing an order.';
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-}
-
 function initCartDrawer() {
   restoreCart();
   updateCartUI();
@@ -1547,7 +1537,7 @@ async function refreshCheckoutQuote(couponCode = AppState.checkoutCoupon, applyi
         : '';
     }
     setOnlinePaymentAvailable(quote.onlinePayments === true);
-    DOM.submitOrderBtn.disabled = false;
+    DOM.submitOrderBtn.disabled = quote.onlinePayments !== true;
     setCheckoutStatus('', '');
   } catch (error) {
     if (requestId !== AppState.checkoutQuoteRequest) return;
@@ -1575,6 +1565,7 @@ async function refreshCheckoutQuote(couponCode = AppState.checkoutCoupon, applyi
     DOM.checkoutItemsTotal.innerText = 'Unavailable';
     DOM.checkoutShippingTotal.innerText = '—';
     DOM.checkoutGrandTotal.innerText = '—';
+    setOnlinePaymentAvailable(false);
     setCheckoutStatus('error', `${error.message} Please try again later or contact GI Apparel on WhatsApp.`);
   } finally {
     if (requestId === AppState.checkoutQuoteRequest) {
@@ -1584,44 +1575,34 @@ async function refreshCheckoutQuote(couponCode = AppState.checkoutCoupon, applyi
   }
 }
 
-// The server reports whether online payment is configured; until it is, only
-// the offline payment request is offered.
 function setOnlinePaymentAvailable(available) {
   const option = document.getElementById('onlinePaymentOption');
   if (!option || !DOM.checkoutForm) return;
   option.hidden = !available;
-  if (!available && selectedPaymentMethod() === 'razorpay') {
-    const offline = DOM.checkoutForm.querySelector('input[name="paymentMethod"][value="offline"]');
-    if (offline) {
-      offline.checked = true;
-      offline.dispatchEvent(new Event('change'));
-    }
-  }
+  const paymentInput = option.querySelector('input[name="paymentMethod"]');
+  if (paymentInput) paymentInput.disabled = !available;
+  const unavailable = document.getElementById('onlinePaymentUnavailable');
+  if (unavailable) unavailable.hidden = available;
+  if (DOM.submitOrderBtn) DOM.submitOrderBtn.disabled = !available;
 }
 
 function selectedPaymentMethod() {
-  return DOM.checkoutForm?.querySelector('input[name="paymentMethod"]:checked')?.value || 'offline';
+  return DOM.checkoutForm?.querySelector('input[name="paymentMethod"]:checked')?.value || 'razorpay';
 }
 
 function updateSubmitOrderLabel() {
   if (!DOM.submitOrderBtn) return;
-  DOM.submitOrderBtn.innerText = selectedPaymentMethod() === 'razorpay'
-    ? 'Continue to secure payment'
-    : 'Submit order request';
+  DOM.submitOrderBtn.innerText = 'Pay securely with Razorpay';
 }
 
 function setCheckoutStatus(type, message) {
   if (!DOM.checkoutStatus) return;
   DOM.checkoutStatus.dataset.type = type;
   DOM.checkoutStatus.innerText = message;
-  // If online checkout fails, never lose the sale: offer the same bag on WhatsApp.
   if (DOM.checkoutHelpLink) {
-    const failed = type === 'error' && AppState.cart.length > 0;
-    DOM.checkoutHelpLink.href = failed ? whatsappOrderUrl() : `https://wa.me/${WHATSAPP_NUMBER}`;
-    DOM.checkoutHelpLink.innerText = failed
-      ? 'Send this order to GI Apparel on WhatsApp instead'
-      : 'Need help? Contact GI Apparel on WhatsApp.';
-    DOM.checkoutHelpLink.classList.toggle('is-fallback', failed);
+    DOM.checkoutHelpLink.href = `https://wa.me/${WHATSAPP_NUMBER}`;
+    DOM.checkoutHelpLink.innerText = 'Need help? Contact GI Apparel on WhatsApp.';
+    DOM.checkoutHelpLink.classList.remove('is-fallback');
   }
 }
 
@@ -1684,7 +1665,7 @@ async function submitOrder(event) {
   const formData = new FormData(DOM.checkoutForm);
   try {
     const paymentMethod = selectedPaymentMethod();
-    if (paymentMethod === 'razorpay') await loadRazorpayCheckout();
+    await loadRazorpayCheckout();
     const customer = getCheckoutCustomer(formData);
     await window.GIAccount?.saveCheckoutAddress(customer);
 
@@ -1696,23 +1677,6 @@ async function submitOrder(event) {
       website: formData.get('website')
     });
     AppState.checkoutCoupon = '';
-
-    if (paymentMethod === 'offline') {
-      if (order.ownerNotification === 'sent') {
-        showCheckoutSuccess(
-          'Order request received',
-          'Your order request has been saved and GI Apparel has been emailed. The team will confirm availability and payment arrangements using your contact details.',
-          order.orderNumber
-        );
-      } else {
-        showCheckoutSuccess(
-          'Order request saved — please contact us',
-          'Your request is recorded, but the owner email alert could not be sent. Please message GI Apparel on WhatsApp so the team can confirm your order.',
-          order.orderNumber
-        );
-      }
-      return;
-    }
 
     const payment = new window.Razorpay({
       key: order.razorpayKeyId,

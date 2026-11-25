@@ -6,9 +6,7 @@ import {
   consumeOrderRateLimit,
   getAuthenticatedUser,
   isAllowedOrigin,
-  notifyOwner,
   onlinePaymentsEnabled,
-  orderNotificationEnvironment,
   supabaseRequest
 } from '../server/services.js';
 
@@ -63,6 +61,12 @@ export default async function handler(request, response) {
     if (typeof couponCode !== 'string' || (couponCode && !/^[A-Za-z0-9_-]{3,32}$/.test(couponCode.trim()))) {
       throw new InputError('Enter a valid coupon code.');
     }
+    if (body.paymentMethod !== 'razorpay') {
+      throw new InputError('Only secure online payment is accepted.');
+    }
+    if (!onlinePaymentsEnabled()) {
+      throw new InputError('Secure online payment is temporarily unavailable. Please try again later.');
+    }
 
     const authenticatedUser = await getAuthenticatedUser(request);
     const customer = validateCustomer({
@@ -70,12 +74,6 @@ export default async function handler(request, response) {
       ...(authenticatedUser ? { email: authenticatedUser.email } : {})
     });
     if (body.website) return fail(response, 400, 'Invalid checkout request.');
-    if (!['offline', 'razorpay'].includes(body.paymentMethod)) {
-      throw new InputError('Choose an available payment method.');
-    }
-    if (body.paymentMethod === 'razorpay' && !onlinePaymentsEnabled()) {
-      throw new InputError('Online payment is not available yet. Please choose the offline payment request.');
-    }
     if (!await consumeOrderRateLimit(request)) {
       return fail(response, 429, 'Too many order attempts. Please wait a few minutes and try again.');
     }
@@ -92,9 +90,9 @@ export default async function handler(request, response) {
       shipping_paise: quote.shippingPaise,
       total_paise: quote.totalPaise,
       currency: 'INR',
-      payment_method: body.paymentMethod,
-      payment_status: body.paymentMethod === 'razorpay' ? 'pending' : 'unpaid',
-      order_status: body.paymentMethod === 'razorpay' ? 'pending_payment' : 'request_received',
+      payment_method: 'razorpay',
+      payment_status: 'pending',
+      order_status: 'pending_payment',
       owner_notification_status: 'pending'
     };
 
@@ -112,88 +110,43 @@ export default async function handler(request, response) {
     const savedOrder = Array.isArray(inserted) ? inserted[0] : inserted;
     if (!savedOrder?.id) throw new Error('The order record was not returned after insertion.');
 
-    if (body.paymentMethod === 'razorpay') {
-      try {
-        const razorpay = await createRazorpayOrder({
-          id: savedOrder.id,
-          orderNumber: savedOrder.order_number,
-          totalPaise: savedOrder.total_paise
-        });
-        const updated = await supabaseRequest(`orders?id=eq.${encodeURIComponent(savedOrder.id)}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
-          body: JSON.stringify({ razorpay_order_id: razorpay.id })
-        });
-        if (!updated?.length) throw new Error('Could not associate the payment with the saved order.');
-        return response.status(201).json({
-          orderId: savedOrder.id,
-          orderNumber: savedOrder.order_number,
-          paymentMethod: 'razorpay',
-          razorpayOrderId: razorpay.id,
-          razorpayKeyId: razorpay.keyId,
-          amountPaise: savedOrder.total_paise,
-          currency: 'INR'
-        });
-      } catch (error) {
-        console.error('Razorpay order initialization failed', {
-          orderId: savedOrder.id,
-          error: error.message
-        });
-        await supabaseRequest(`orders?id=eq.${encodeURIComponent(savedOrder.id)}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ payment_status: 'failed', order_status: 'payment_initialization_failed' })
-        }).catch((updateError) => {
-          console.error('Could not record Razorpay initialization failure', {
-            orderId: savedOrder.id,
-            error: updateError.message
-          });
-        });
-        return fail(response, 502, 'Online payment could not be started. Your order was not placed; please try again or contact us.');
-      }
-    }
-
     try {
-      orderNotificationEnvironment();
-      await notifyOwner(savedOrder, customer);
-      await supabaseRequest(`orders?id=eq.${encodeURIComponent(savedOrder.id)}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          owner_notification_status: 'sent',
-          owner_notified_at: new Date().toISOString()
-        })
+      const razorpay = await createRazorpayOrder({
+        id: savedOrder.id,
+        orderNumber: savedOrder.order_number,
+        totalPaise: savedOrder.total_paise
       });
+      const updated = await supabaseRequest(`orders?id=eq.${encodeURIComponent(savedOrder.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
+        body: JSON.stringify({ razorpay_order_id: razorpay.id })
+      });
+      if (!updated?.length) throw new Error('Could not associate the payment with the saved order.');
       return response.status(201).json({
         orderId: savedOrder.id,
         orderNumber: savedOrder.order_number,
-        paymentMethod: 'offline',
-        ownerNotification: 'sent'
+        paymentMethod: 'razorpay',
+        razorpayOrderId: razorpay.id,
+        razorpayKeyId: razorpay.keyId,
+        amountPaise: savedOrder.total_paise,
+        currency: 'INR'
       });
     } catch (error) {
-      console.error('Offline order saved but owner notification failed', {
+      console.error('Razorpay order initialization failed', {
         orderId: savedOrder.id,
         error: error.message
       });
       await supabaseRequest(`orders?id=eq.${encodeURIComponent(savedOrder.id)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          owner_notification_status: 'failed',
-          owner_notification_error: error.message.slice(0, 240)
-        })
+        body: JSON.stringify({ payment_status: 'failed', order_status: 'payment_initialization_failed' })
       }).catch((updateError) => {
-        console.error('Could not record owner notification failure', {
+        console.error('Could not record Razorpay initialization failure', {
           orderId: savedOrder.id,
           error: updateError.message
         });
       });
-      return response.status(201).json({
-        orderId: savedOrder.id,
-        orderNumber: savedOrder.order_number,
-        paymentMethod: 'offline',
-        ownerNotification: 'failed'
-      });
+      return fail(response, 502, 'Online payment could not be started. Your order was not placed; please try again or contact us.');
     }
   } catch (error) {
     if (error instanceof InputError) return fail(response, 400, error.message);

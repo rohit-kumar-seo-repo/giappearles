@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import ordersHandler from '../api/orders.js';
 import { ORDER_CATALOG, FLAT_SHIPPING_PAISE } from '../server/catalog.js';
 import {
   buildOrder,
@@ -219,5 +220,41 @@ test('online payment is offered only with Razorpay keys, and only live keys in p
       if (saved[key] === undefined) delete process.env[key];
       else process.env[key] = saved[key];
     }
+  }
+});
+
+test('checkout rejects offline orders before making any external request', async () => {
+  const previousOrigin = process.env.APP_ORIGIN;
+  const originalFetch = globalThis.fetch;
+  let fetchCalls = 0;
+  process.env.APP_ORIGIN = 'http://localhost:3000';
+  globalThis.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('The offline order path must stop before external services.');
+  };
+  const response = {
+    statusCode: 200,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    setHeader() {},
+    json(body) { this.body = body; return this; }
+  };
+
+  try {
+    await ordersHandler({
+      method: 'POST',
+      headers: { origin: 'http://localhost:3000', 'content-length': '512' },
+      body: {
+        items: [{ id: 'gi-001', size: 'M', quantity: 1 }],
+        paymentMethod: 'offline'
+      }
+    }, response);
+    assert.equal(response.statusCode, 400);
+    assert.match(response.body.error, /Only secure online payment is accepted/);
+    assert.equal(fetchCalls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (previousOrigin === undefined) delete process.env.APP_ORIGIN;
+    else process.env.APP_ORIGIN = previousOrigin;
   }
 });

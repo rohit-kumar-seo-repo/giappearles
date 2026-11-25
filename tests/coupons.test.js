@@ -116,22 +116,19 @@ test('checkout quote returns only the server-validated coupon discount', async (
 test('coupon orders are created through the transactional server function', async () => {
   const keys = [
     'SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'ORDER_RATE_LIMIT_SECRET',
-    'APP_ORIGIN', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RESEND_API_KEY',
-    'ORDER_NOTIFICATION_FROM', 'ORDER_NOTIFICATION_TO'
+    'APP_ORIGIN', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'VERCEL_ENV'
   ];
   const previous = Object.fromEntries(keys.map(name => [name, process.env[name]]));
   const originalFetch = globalThis.fetch;
   Object.assign(process.env, {
     SUPABASE_URL: 'https://supabase.example', SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
     ORDER_RATE_LIMIT_SECRET: 'test-rate-limit-secret', APP_ORIGIN: 'http://localhost:3000',
-    RESEND_API_KEY: 'test-resend-key', ORDER_NOTIFICATION_FROM: 'GI Apparel <orders@example.com>',
-    ORDER_NOTIFICATION_TO: 'owner@example.com'
+    RAZORPAY_KEY_ID: 'rzp_test_coupon', RAZORPAY_KEY_SECRET: 'test-payment-secret', VERCEL_ENV: 'preview'
   });
   delete process.env.SUPABASE_PUBLISHABLE_KEY;
-  delete process.env.RAZORPAY_KEY_ID;
-  delete process.env.RAZORPAY_KEY_SECRET;
   let couponOrderArgs;
-  let emailBody = '';
+  let razorpayRequest;
+  let paymentOrderPatch;
   globalThis.fetch = async (url, options = {}) => {
     const address = String(url);
     if (address.endsWith('/rest/v1/rpc/consume_order_rate_limit')) return { ok: true, status: 200, text: async () => 'true' };
@@ -145,11 +142,14 @@ test('coupon orders are created through the transactional server function', asyn
         })
       };
     }
-    if (address.startsWith('https://api.resend.com/emails')) {
-      emailBody = options.body;
-      return { ok: true, status: 200, json: async () => ({ id: 'email-id' }) };
+    if (address === 'https://api.razorpay.com/v1/orders') {
+      razorpayRequest = JSON.parse(options.body);
+      return { ok: true, status: 200, json: async () => ({ id: 'order_test_coupon', amount: razorpayRequest.amount, currency: razorpayRequest.currency }) };
     }
-    if (address.includes('/rest/v1/orders?') && options.method === 'PATCH') return { ok: true, status: 200, text: async () => '[]' };
+    if (address.includes('/rest/v1/orders?') && options.method === 'PATCH') {
+      paymentOrderPatch = JSON.parse(options.body);
+      return { ok: true, status: 200, text: async () => JSON.stringify([{ id: couponOrderArgs.p_order.id }]) };
+    }
     throw new Error(`Unexpected request in coupon order test: ${address}`);
   };
 
@@ -163,13 +163,17 @@ test('coupon orders are created through the transactional server function', asyn
         name: 'Customer Name', email: 'customer@example.com', phone: '9536429777',
         addressLine1: '12 Fashion Street', addressLine2: '', city: 'Jaipur', state: 'Rajasthan', postalCode: '302001'
       },
-      paymentMethod: 'offline', couponCode: 'SAVE10', website: ''
+      paymentMethod: 'razorpay', couponCode: 'SAVE10', website: ''
     }), res);
     assert.equal(res.statusCode, 201);
     assert.equal(couponOrderArgs.p_coupon_code, 'SAVE10');
     assert.equal(couponOrderArgs.p_order.item_subtotal_paise, 169900);
-    assert.match(emailBody, /SAVE10/);
-    assert.match(emailBody, /169\.9 INR/);
+    assert.equal(couponOrderArgs.p_order.payment_method, 'razorpay');
+    assert.equal(couponOrderArgs.p_order.payment_status, 'pending');
+    assert.equal(razorpayRequest.amount, 167910);
+    assert.deepEqual(paymentOrderPatch, { razorpay_order_id: 'order_test_coupon' });
+    assert.equal(res.body.paymentMethod, 'razorpay');
+    assert.equal(res.body.amountPaise, 167910);
   } finally {
     globalThis.fetch = originalFetch;
     for (const [name, value] of Object.entries(previous)) {
