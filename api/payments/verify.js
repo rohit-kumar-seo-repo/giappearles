@@ -5,6 +5,7 @@ import {
   isAllowedOrigin,
   notifyOwner,
   orderNotificationEnvironment,
+  razorpayCredentials,
   supabaseRequest
 } from '../../server/services.js';
 
@@ -51,7 +52,7 @@ export default async function handler(request, response) {
       });
     }
 
-    const secret = process.env.RAZORPAY_KEY_SECRET;
+    const { keySecret: secret } = razorpayCredentials();
     if (!verifyRazorpaySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature, secret)) {
       return fail(response, 400, 'Payment verification failed.');
     }
